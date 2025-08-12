@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import Chat from './components/Chat';
-import MarkdownDemo from './components/MarkdownDemo';
-import SimpleMarkdownTest from './components/SimpleMarkdownTest';
-import { AccessibilityProvider } from './components/AccessibilityProvider';
+import { Chat, MarkdownDemo, SimpleMarkdownTest, AccessibilityProvider } from './components';
 import { Bot, MessageCircle, NotebookText, FlaskConical } from 'lucide-react';
 
 function App() {
