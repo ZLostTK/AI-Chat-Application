@@ -1,0 +1,352 @@
+/* Accessibility Controls Styles */
+.accessibility-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: var(--background);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  min-width: 280px;
+  backdrop-filter: blur(10px);
+}
+
+.accessibility-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.accessibility-title {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.accessibility-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--secondary-color);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.accessibility-button:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+}
+
+.accessibility-button:focus {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.accessibility-button.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.accessibility-button:active {
+  transform: translateY(0);
+}
+
+.system-preference-indicator {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Font Size Controls */
+.font-size-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.font-size-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.font-size-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.font-size-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--secondary-color);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.font-size-btn:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.font-size-btn:focus {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.font-size-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* High Contrast Theme Variables */
+[data-high-contrast="true"] {
+  /* Alto contraste en oscuro */
+  --primary-color: #93c5fd; /* azul claro accesible */
+  --primary-hover: #bfdbfe;
+  --secondary-color: #0b1220; /* más oscuro para contraste */
+  --text-primary: #ffffff;
+  --text-secondary: #e5e7eb;
+  --text-light: #e5e7eb;
+  --border-color: #e5e7eb;
+  --success-color: #22c55e;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --background: #00040a;
+  --chat-bg: #0b1220;
+  --user-message-bg: #2563eb;
+  --ai-message-bg: #0b1220;
+}
+
+[data-high-contrast="true"] .accessibility-controls {
+  background: #00040a;
+  border: 3px solid #e5e7eb;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+}
+
+[data-high-contrast="true"] .accessibility-button {
+  background: #0b1220;
+  border: 3px solid #e5e7eb;
+  color: #ffffff;
+}
+
+[data-high-contrast="true"] .accessibility-button:hover,
+[data-high-contrast="true"] .accessibility-button.active {
+  background: #002c89;
+  color: #ffffff;
+  border-color: #e5e7eb;
+}
+
+/* Font Size Variables */
+[data-font-size="small"] {
+  --base-font-size: 14px;
+  --heading-font-size: 18px;
+}
+
+[data-font-size="medium"] {
+  --base-font-size: 16px;
+  --heading-font-size: 20px;
+}
+
+[data-font-size="large"] {
+  --base-font-size: 20px;
+  --heading-font-size: 26px;
+}
+
+/* Reduced Motion */
+[data-reduced-motion="true"] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Asegurar que el input sea siempre accesible en modo de movimiento reducido */
+[data-reduced-motion="true"] .input-area {
+  /* Mantener el input visible y accesible */
+  position: relative !important;
+  z-index: 100 !important;
+  background: var(--background) !important;
+  border-top: 2px solid var(--border-color) !important;
+}
+
+/* Reduced Motion: evitar desplazamiento/scroll excesivo pero mantener funcionalidad */
+html[data-reduced-motion="true"],
+html[data-reduced-motion="true"] body {
+  /* Mantener scroll vertical para dispositivos móviles */
+  overflow-x: hidden !important;
+  /* Permitir scroll vertical para mantener el input visible */
+  overflow-y: auto !important;
+  height: 100dvh !important;
+}
+
+/* Asegurar que el contenedor principal del chat ocupe el alto disponible */
+html[data-reduced-motion="true"] .chat-container {
+  height: 100dvh !important;
+  /* Mantener scroll vertical para dispositivos móviles */
+  overflow-y: auto !important;
+  /* Asegurar que el layout sea estable */
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Desactivar scroll horizontal pero mantener scroll vertical en mensajes */
+html[data-reduced-motion="true"] .messages {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+/* Desactivar animaciones que impliquen movimiento visible */
+html[data-reduced-motion="true"] .status-indicator,
+html[data-reduced-motion="true"] .message,
+html[data-reduced-motion="true"] .loading-dots span {
+  animation: none !important;
+}
+
+/* Evitar posicionamiento sticky que pueda generar desplazamientos súbitos */
+html[data-reduced-motion="true"] .chat-header {
+  position: static !important;
+}
+
+/* Asegurar que el input sea siempre visible en dispositivos móviles con movimiento reducido */
+@media (max-width: 768px) {
+  html[data-reduced-motion="true"] .input-area {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 100 !important;
+    background: var(--background) !important;
+    border-top: 2px solid var(--border-color) !important;
+    /* Asegurar que el input tenga suficiente padding para dispositivos móviles */
+    padding: 1rem !important;
+  }
+  
+  html[data-reduced-motion="true"] .chat-container {
+    /* En móviles, usar viewport completo pero mantener scroll */
+    height: 100vh !important;
+    overflow-y: auto !important;
+  }
+  
+  html[data-reduced-motion="true"] .messages {
+    /* Asegurar que los mensajes no ocupen todo el espacio disponible */
+    flex: 1 !important;
+    min-height: 0 !important;
+    /* Mantener scroll vertical para navegar por mensajes */
+    overflow-y: auto !important;
+  }
+}
+
+/* Reglas específicas para dispositivos muy pequeños */
+@media (max-width: 480px) {
+  html[data-reduced-motion="true"] .input-area {
+    /* Asegurar que el input sea visible en pantallas muy pequeñas */
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 200 !important;
+    /* Ajustar padding para pantallas pequeñas */
+    padding: 0.75rem !important;
+  }
+  
+  html[data-reduced-motion="true"] .messages {
+    /* Ajustar el área de mensajes para dejar espacio al input fijo */
+    padding-bottom: 80px !important;
+  }
+  
+  html[data-reduced-motion="true"] .chat-container {
+    /* Ajustar altura para evitar que el input fijo tape contenido */
+    height: calc(100vh - 80px) !important;
+  }
+}
+
+/* Focus Indicators */
+*:focus {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Skip Link for Keyboard Navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--primary-color);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1001;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* High Contrast Code Blocks */
+[data-high-contrast="true"] .markdown-content pre {
+  background: #00040a;
+}
+
+[data-high-contrast="true"] .markdown-content code {
+  background: #0b1220;
+  color: #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .accessibility-controls {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+  }
+  
+  .font-size-buttons {
+    gap: 4px;
+  }
+  
+  .font-size-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
