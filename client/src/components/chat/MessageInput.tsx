@@ -1,5 +1,5 @@
 import React, { useState, KeyboardEvent } from 'react';
-import { useAccessibility } from './AccessibilityProvider';
+import { useAccessibility } from '../accessibility/AccessibilityProvider.tsx';
 import { Send } from 'lucide-react';
 
 interface MessageInputProps {
@@ -63,3 +63,5 @@ const MessageInput: React.FC<MessageInputProps> = ({
 };
 
 export default MessageInput;
+
+

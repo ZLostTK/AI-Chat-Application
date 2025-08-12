@@ -35,4 +35,3 @@ $E = mc^2$
 export default SimpleMarkdownTest;
 
 
-

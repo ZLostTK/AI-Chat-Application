@@ -21,45 +21,66 @@ Aplicación de chat con frontend React (Vite + TypeScript) y backend sin WebSock
 
 ---
 
-## Desarrollo local (sin WS)
+## Modos de conexión: API HTTP vs WebSocket
 
-Recomendado: usar Vercel CLI o Netlify CLI para levantar el frontend y la función HTTP de chat.
+El cliente soporta dos transportes: API HTTP (`/api/chat`) y WebSocket. Puedes alternar entre ambos sin cambiar código de negocio.
 
-### Opción A: Netlify (recomendado por simpleza)
-1) Instalar dependencias del frontend:
-```bash
-cd client
-npm ci
-```
-2) Volver a la raíz y arrancar entorno local con funciones:
-```bash
-cd ..
-npm i -g netlify-cli  # si no la tienes
-netlify dev
-```
-3) (Opcional) Exporta `GEMINI_API_KEY` antes de arrancar:
-```bash
-export GEMINI_API_KEY=tu_clave
-```
-4) Abre `http://localhost:8888`. El frontend llama a `POST /api/chat`.
+- API HTTP: usa `useChatApi` con `fetch('/api/chat')`. Ideal para Vercel/Netlify sin WS.
+- WebSocket: usa `useWebSocket(url)` para conexión en tiempo real (por ejemplo, `ws://localhost:3001`).
 
-### Opción B: Vercel
-1) Instalar dependencias del frontend:
-```bash
-cd client && npm ci && cd ..
-```
-2) Arrancar entorno local con funciones:
-```bash
-npm i -g vercel  # si no la tienes
-vercel dev
-```
-3) (Opcional) Exporta `GEMINI_API_KEY` antes de arrancar:
-```bash
-export GEMINI_API_KEY=tu_clave
-```
-4) Abre la URL que indica la CLI (suele ser `http://localhost:3000`).
+### Cómo alternar el transporte
 
-Nota: En este flujo no necesitas correr un servidor WS. El cliente usa `fetch('/api/chat')`.
+Orden de precedencia para seleccionar transporte (de mayor a menor):
+1. Parámetro de URL `?transport=ws|api` y opcional `&wsUrl=ws://host:puerto`
+2. `localStorage.setItem('chat:transport','ws'|'api')`
+3. Variable de entorno `VITE_CHAT_TRANSPORT=ws|api` y `VITE_WS_URL=ws://host:puerto`
+4. Valor por defecto: `api`
+
+El componente `Chat` detecta esto automáticamente al montar:
+
+- Si `transport=ws`, usará `useWebSocket` apuntando a `VITE_WS_URL` o `ws://localhost:3001` si no está definida.
+- Si `transport=api`, usará `useChatApi`.
+
+En la UI, verás una etiqueta `API` o `WS` junto al estado de conexión; en modo WS también muestra la URL.
+
+### Ejemplos rápidos
+
+- Forzar HTTP API temporalmente (URL):
+  `http://localhost:5173/?transport=api`
+
+- Forzar WebSocket con URL explícita (URL):
+  `http://localhost:5173/?transport=ws&wsUrl=ws://localhost:3001`
+
+- Persistir preferencia en el navegador (desde consola dev):
+  ```js
+  localStorage.setItem('chat:transport', 'ws');
+  // opcionalmente:
+  localStorage.setItem('chat:transport', 'api');
+  ```
+
+- Configurar por variables de entorno (crear `.env` en `client/` o exportar antes de dev/build):
+  ```bash
+  # client/.env.local
+  VITE_CHAT_TRANSPORT=ws   # o api
+  VITE_WS_URL=ws://localhost:3001
+  ```
+
+### Consejos para depurar WebSocket
+
+- Asegúrate de que el servidor WS está arrancado y accesible desde el navegador:
+  ```bash
+  cd server
+  npm install
+  node index.js  # ws://localhost:3001
+  ```
+- Comprueba CORS/CSR: los WS no usan CORS, pero proxies/dev servers pueden bloquear si usas wss sin certificado válido.
+- Observa la consola del navegador: el hook `useWebSocket` loguea eventos (open, message, close, reconnect).
+- El cliente reintenta la conexión automáticamente cada 3s si se corta.
+
+Si ves "error al conectar" en modo WS, revisa:
+- Que `ws://localhost:3001` sea alcanzable (puerto abierto, sin firewall).
+- Que el servidor envíe JSON con `{ sender: 'ai', text: '...' }` para respuestas.
+- Que no haya colisiones con el proxy del dev server (puedes probar con `?wsUrl=ws://127.0.0.1:3001`).
 
 ---
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useAccessibility } from './AccessibilityProvider';
+import { useAccessibility } from '../accessibility/AccessibilityProvider';
 import MessageItem from './MessageItem';
 
 interface Message {
@@ -49,3 +49,5 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onAction }) => {
 };
 
 export default MessageList;
+
+

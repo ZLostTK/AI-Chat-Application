@@ -1,16 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { MessageCircle, Trash2, Accessibility } from 'lucide-react';
-import { useWebSocket } from '../hooks/useWebSocket';
-import MessageList from './MessageList';
-import MessageInput from './MessageInput';
-import { AccessibilityControls } from './AccessibilityControls';
+import { useChatApi } from '../../hooks/useChatApi';
+import { useWebSocket } from '../../hooks/useWebSocket';
+import MessageList from '../messages/MessageList';
+import MessageInput from './MessageInput.tsx';
+import { AccessibilityControls } from '../accessibility/AccessibilityControls';
 import './Chat.css';
 
 const Chat: React.FC = () => {
   // Modo oscuro por defecto, sin alternancia de tema
   const [demoMode, setDemoMode] = useState(false);
   const [showAccessibility, setShowAccessibility] = useState(false);
-  const { messages, isConnected, isLoading, sendMessage, clearMessages } = useWebSocket('ws://localhost:3001');
+  // Transport selection: api | ws (order of precedence: URL param > localStorage > env > default)
+  const { transport, wsUrl } = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paramTransport = params.get('transport');
+    const storageTransport = localStorage.getItem('chat:transport');
+    const envTransport = (import.meta as any).env?.VITE_CHAT_TRANSPORT as string | undefined;
+    const selected = (paramTransport || storageTransport || envTransport || 'api').toLowerCase();
+    const wsUrlParam = params.get('wsUrl') || (import.meta as any).env?.VITE_WS_URL || 'ws://localhost:3001';
+    return {
+      transport: (selected === 'ws' ? 'ws' : 'api') as 'api' | 'ws',
+      wsUrl: wsUrlParam,
+    };
+  }, []);
+
+  const chatApi = useChatApi();
+  const chatWs = useWebSocket(wsUrl);
+  const { messages, isConnected, isLoading, sendMessage, clearMessages } = transport === 'ws' ? chatWs : chatApi;
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -105,6 +122,9 @@ Ready to chat with enhanced formatting!`;
           AI Assistant
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div className="chat-status" title={transport === 'ws' ? `WebSocket: ${wsUrl}` : 'HTTP API'}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>{transport.toUpperCase()}</span>
+          </div>
           <div className="chat-status">
             <div className="status-indicator" />
             {isConnected ? 'Connected' : 'Connecting...'}
@@ -150,3 +170,5 @@ Ready to chat with enhanced formatting!`;
 };
 
 export default Chat;
+
+

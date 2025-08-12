@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAccessibility } from './AccessibilityProvider';
+import { useAccessibility } from './AccessibilityProvider.tsx';
 import { 
   Type, 
   Move, 
@@ -89,3 +89,5 @@ export const AccessibilityControls: React.FC = () => {
     </div>
   );
 };
+
+

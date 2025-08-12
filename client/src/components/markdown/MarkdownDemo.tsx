@@ -36,7 +36,7 @@ console.log(fibonacci(10)); // 55
 Bloque de código Python:
 \`\`\`python
 def factorial(n):
-    if n == 0:
+    if (n == 0):
         return 1
     return n * factorial(n - 1)
 
@@ -98,6 +98,5 @@ Este componente demuestra el soporte completo para:
 };
 
 export default MarkdownDemo;
-
 
 

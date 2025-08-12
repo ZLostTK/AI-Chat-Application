@@ -2,7 +2,7 @@
 @import url('https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css');
 
 /* Import accessibility styles */
-@import './AccessibilityControls.css';
+@import '../accessibility/AccessibilityControls.css';
 
 :root {
   --primary-color: #60a5fa;
@@ -601,11 +601,6 @@ html[data-reduced-motion="true"] .chat-container {
     padding: 1rem;
   }
   
-  .code-block-container {
-    margin: 0.5rem -0.5rem;
-    border-radius: 0;
-  }
-  
   /* Asegurar que el input sea visible en modo de movimiento reducido */
   html[data-reduced-motion="true"] .input-area {
     position: sticky;
@@ -651,3 +646,5 @@ html[data-reduced-motion="true"] .chat-container {
     padding-bottom: 80px;
   }
 }
+
+

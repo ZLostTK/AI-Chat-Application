@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bot, User } from 'lucide-react';
-import { MarkdownRenderer } from './MarkdownRenderer';
+import { MarkdownRenderer } from '../markdown/MarkdownRenderer';
 
 interface Message {
   id?: string;
@@ -59,3 +59,5 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onAction }) => {
 };
 
 export default MessageItem;
+
+

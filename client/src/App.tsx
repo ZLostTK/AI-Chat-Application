@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Chat, MarkdownDemo, SimpleMarkdownTest, AccessibilityProvider } from './components';
 import { Bot, MessageCircle, NotebookText, FlaskConical } from 'lucide-react';
 
