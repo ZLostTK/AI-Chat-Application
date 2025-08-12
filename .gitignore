@@ -72,7 +72,6 @@ web_modules/
 
 # dotenv environment variables file
 .env
-.env.*
 .env.local
 !/.env.example
 !/server/.env.example
@@ -93,7 +92,6 @@ web_modules/
 /client/.pnp.js
 /client/coverage
 /client/.env
-/client/.env.*
 /client/*.tsbuildinfo
 /client/package-lock.json
 /client/pnpm-lock.yaml
