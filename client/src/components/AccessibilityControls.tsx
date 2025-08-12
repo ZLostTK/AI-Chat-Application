@@ -6,7 +6,8 @@ import {
   Eye, 
   EyeOff,
   ZoomIn,
-  ZoomOut
+  ZoomOut,
+  Cog
 } from 'lucide-react';
 import './AccessibilityControls.css';
 
@@ -79,8 +80,8 @@ export const AccessibilityControls: React.FC = () => {
           <Move size={20} />
           <span>Movimiento Reducido</span>
           {reducedMotion && (
-            <span className="system-preference-indicator" title="Activado por preferencia del sistema">
-              ⚙️
+            <span className="system-preference-indicator" title="Activado por preferencia del sistema" aria-hidden="true">
+              <Cog size={14} />
             </span>
           )}
         </button>

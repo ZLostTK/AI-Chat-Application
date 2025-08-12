@@ -3,6 +3,7 @@ import Chat from './components/Chat';
 import MarkdownDemo from './components/MarkdownDemo';
 import SimpleMarkdownTest from './components/SimpleMarkdownTest';
 import { AccessibilityProvider } from './components/AccessibilityProvider';
+import { Bot, MessageCircle, NotebookText, FlaskConical } from 'lucide-react';
 
 function App() {
   const [showDemo, setShowDemo] = useState(0);
@@ -17,8 +18,9 @@ function App() {
       <div className="a11y-root min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-4">
         <div id="main-content" className="a11y-main max-w-6xl mx-auto">
           <div className="a11y-hide-in-reduced-motion text-center mb-6">
-            <h1 className="text-4xl font-bold text-gray-100 mb-4">
-              🤖 AI ChatBot con Markdown
+            <h1 className="text-4xl font-bold text-gray-100 mb-4 flex items-center justify-center gap-2">
+              <Bot size={32} aria-hidden="true" />
+              <span>AI ChatBot con Markdown</span>
             </h1>
             <div className="flex justify-center gap-4">
               <button
@@ -29,7 +31,10 @@ function App() {
                     : 'bg-gray-800 text-gray-200 hover:bg-gray-700'
                 }`}
               >
-                💬 Chat
+                <span className="inline-flex items-center gap-2">
+                  <MessageCircle size={18} aria-hidden="true" />
+                  <span>Chat</span>
+                </span>
               </button>
               <button
                 onClick={() => setShowDemo(1)}
@@ -39,7 +44,10 @@ function App() {
                     : 'bg-gray-800 text-gray-200 hover:bg-gray-700'
                 }`}
               >
-                📝 Demo Markdown
+                <span className="inline-flex items-center gap-2">
+                  <NotebookText size={18} aria-hidden="true" />
+                  <span>Demo Markdown</span>
+                </span>
               </button>
               <button
                 onClick={() => setShowDemo(2)}
@@ -49,7 +57,10 @@ function App() {
                     : 'bg-gray-800 text-gray-200 hover:bg-gray-700'
                 }`}
               >
-                🧪 Test Simple
+                <span className="inline-flex items-center gap-2">
+                  <FlaskConical size={18} aria-hidden="true" />
+                  <span>Test Simple</span>
+                </span>
               </button>
             </div>
           </div>

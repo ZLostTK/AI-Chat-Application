@@ -1,5 +1,6 @@
 import React from 'react';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { Rocket } from 'lucide-react';
 
 const MarkdownDemo: React.FC = () => {
   const demoContent = `# Markdown + LaTeX + Code Demo
@@ -58,10 +59,10 @@ $$
 ### 5. **Tablas**
 | Lenguaje | Paradigma | Popularidad |
 |-----------|-----------|-------------|
-| JavaScript | Multiparadigma | ⭐⭐⭐⭐⭐ |
-| Python | Multiparadigma | ⭐⭐⭐⭐⭐ |
-| C++ | Orientado a objetos | ⭐⭐⭐⭐ |
-| Rust | Sistemas | ⭐⭐⭐⭐ |
+| JavaScript | Multiparadigma | 5/5 |
+| Python | Multiparadigma | 5/5 |
+| C++ | Orientado a objetos | 4/5 |
+| Rust | Sistemas | 4/5 |
 
 ### 6. **Citas**
 > "La programación es el arte de decirle a otra persona qué debe hacer una computadora."
@@ -72,23 +73,24 @@ $$
 ---
 
 ### 8. **Imágenes**
-![Logo de React](https://via.placeholder.com/200x100/61DAFB/000000?text=React)
+![Logo de React](https://cdn.worldvectorlogo.com/logos/react-1.svg)
 
 ---
 
 ## Resumen
 Este componente demuestra el soporte completo para:
-- ✅ Markdown estándar
-- ✅ GitHub Flavored Markdown (GFM)
-- ✅ LaTeX matemático
-- ✅ Resaltado de código con tema dark
-- ✅ Estilos personalizados con Tailwind CSS
+- [x] Markdown estándar
+- [x] GitHub Flavored Markdown (GFM)
+- [x] LaTeX matemático
+- [x] Resaltado de código con tema dark
+- [x] Estilos personalizados con Tailwind CSS
 `;
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-900 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold text-center mb-8 text-gray-100">
-        🚀 Demo: Markdown + LaTeX + Code Highlighting
+      <h1 className="text-3xl font-bold text-center mb-8 text-gray-100 flex items-center justify-center gap-2">
+        <Rocket size={28} aria-hidden="true" />
+        <span>Demo: Markdown + LaTeX + Code Highlighting</span>
       </h1>
       <MarkdownRenderer content={demoContent} />
     </div>

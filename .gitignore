@@ -101,7 +101,6 @@ web_modules/
 # Server directory
 /server/node_modules
 /server/.env
-/server/.env.*
 /server/*.tsbuildinfo
 /server/package-lock.json
 /server/pnpm-lock.yaml

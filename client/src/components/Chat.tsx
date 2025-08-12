@@ -25,7 +25,7 @@ const Chat: React.FC = () => {
       setDemoMode(true);
       // Simulate AI response with formatted content
       setTimeout(() => {
-        const demoResponse = `# AI Assistant Demo Mode 🚀
+        const demoResponse = `# AI Assistant Demo Mode
 
 Welcome to the **enhanced AI chat interface**! Here are some formatting examples:
 
@@ -74,14 +74,14 @@ console.log(greetUser("Developer"));
 
 | Feature | Status | Priority |
 |---------|--------|----------|
-| Markdown | ✅ Complete | High |
-| LaTeX | ✅ Complete | High |
-| Code Blocks | ✅ Complete | High |
-| Dark Mode | ✅ Complete | Medium |
+| Markdown | Complete | High |
+| LaTeX | Complete | High |
+| Code Blocks | Complete | High |
+| Dark Mode | Complete | Medium |
 
 > **Note**: This is demo mode for testing formatting capabilities. In production, connect to your AI backend service.
 
-Ready to chat with enhanced formatting! 💬`;
+Ready to chat with enhanced formatting!`;
 
         // You would normally handle this through the WebSocket
         console.log('Demo response generated', { length: demoResponse.length });
