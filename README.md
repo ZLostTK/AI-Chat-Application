@@ -1,4 +1,4 @@
-## AI Chat Application
+## AI Chat Application [![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ZLostTK/AI-Chat-Application)
 
 Aplicación de chat con frontend React (Vite + TypeScript) y backend sin WebSocket usando endpoints HTTP compatibles con despliegue gratis en Vercel o Netlify.
 
