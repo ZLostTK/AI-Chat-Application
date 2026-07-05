@@ -83,6 +83,7 @@ web_modules/
 .DS_Store
 
 ### Project-specific ignores ###
+.codebase-memory
 
 # Client directory
 /client/node_modules
