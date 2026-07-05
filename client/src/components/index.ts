@@ -10,3 +10,4 @@ export { Layout } from './layout/Layout';
 export { Sidebar } from './layout/Sidebar';
 export { WelcomeScreen } from './layout/WelcomeScreen';
 export { SettingsDrawer } from './layout/SettingsDrawer';
+export { ApiKeyModal } from './layout/ApiKeyModal';
