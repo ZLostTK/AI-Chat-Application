@@ -17,28 +17,13 @@
     --color-success: #34d399;
     --color-error: #f87171;
     --color-warning: #fbbf24;
-
-    /* Backward-compat aliases for existing CSS (Chat.css, AccessibilityControls.css) */
-    --primary-color: #60a5fa;
-    --primary-hover: #3b82f6;
-    --secondary-color: #1e293b;
-    --background: #0f172a;
-    --chat-bg: #1e293b;
-    --user-message-bg: #3b82f6;
-    --ai-message-bg: #334155;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-light: #94a3b8;
-    --border-color: #334155;
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
-    --radius: 0.75rem;
-    --radius-sm: 0.5rem;
   }
 
   body {
-    @apply bg-surface text-slate-100 antialiased;
+    @apply bg-surface text-text-primary antialiased;
     font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
     font-size: var(--base-font-size, 16px);
     line-height: 1.6;
@@ -79,31 +64,20 @@
     border: 0;
   }
 
-  /* High Contrast overrides (from AccessibilityControls.css) */
+  /* High Contrast overrides — darker bg, higher text contrast */
   [data-high-contrast="true"] {
-    --primary-color: #93c5fd;
-    --primary-hover: #bfdbfe;
-    --secondary-color: #0b1220;
-    --text-primary: #ffffff;
-    --text-secondary: #e5e7eb;
-    --text-light: #e5e7eb;
-    --border-color: #e5e7eb;
-    --success-color: #22c55e;
-    --error-color: #ef4444;
-    --warning-color: #f59e0b;
-    --background: #00040a;
-    --chat-bg: #0b1220;
-    --user-message-bg: #2563eb;
-    --ai-message-bg: #0b1220;
-  }
-
-  [data-high-contrast="true"] .markdown-content pre {
-    background: #00040a;
-  }
-
-  [data-high-contrast="true"] .markdown-content code {
-    background: #0b1220;
-    color: #ffffff;
+    --color-bg-primary: #00040a;
+    --color-bg-secondary: #0b1220;
+    --color-bg-elevated: #0b1220;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #e5e7eb;
+    --color-text-muted: #e5e7eb;
+    --color-accent: #93c5fd;
+    --color-accent-hover: #bfdbfe;
+    --color-border: #e5e7eb;
+    --color-success: #22c55e;
+    --color-error: #ef4444;
+    --color-warning: #f59e0b;
   }
 
   /* Font Size Variables */
@@ -114,35 +88,97 @@
   /* Scrollbar styling for message area */
   .messages::-webkit-scrollbar { width: 6px; }
   .messages::-webkit-scrollbar-track { background: transparent; }
-  .messages::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
-  .messages::-webkit-scrollbar-thumb:hover { background: var(--text-light); }
+  .messages::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+  .messages::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
 
   /* Markdown content typography (moved from MarkdownRenderer.css) */
-  .markdown-content { @apply text-gray-100 leading-relaxed; }
-  .markdown-content h1 { @apply text-3xl font-bold text-gray-100 mb-4 mt-6 border-b-2 border-gray-700 pb-2; }
-  .markdown-content h2 { @apply text-2xl font-bold text-gray-100 mb-3 mt-5 border-b border-gray-700 pb-1; }
-  .markdown-content h3 { @apply text-xl font-bold text-gray-100 mb-2 mt-4; }
-  .markdown-content h4 { @apply text-lg font-bold text-gray-100 mb-2 mt-3; }
-  .markdown-content h5 { @apply text-base font-bold text-gray-100 mb-2 mt-2; }
-  .markdown-content h6 { @apply text-sm font-bold text-gray-100 mb-2 mt-2; }
-  .markdown-content p { @apply mb-4 text-gray-300 leading-relaxed; }
-  .markdown-content ul { @apply list-disc list-inside mb-4 space-y-1 text-gray-300; }
-  .markdown-content ol { @apply list-decimal list-inside mb-4 space-y-1 text-gray-300; }
-  .markdown-content li { @apply text-gray-300; }
-  .markdown-content blockquote { @apply border-l-4 border-blue-400 pl-4 not-italic text-gray-200 bg-gray-800/60 py-2 my-4 rounded-r; }
-  .markdown-content code { @apply bg-gray-800 text-green-400 px-1 py-0.5 rounded text-sm font-mono; }
-  .markdown-content pre code { @apply bg-transparent text-gray-100 p-0; }
-  .markdown-content table { @apply min-w-full border-collapse border border-gray-700 my-4; }
-  .markdown-content th { @apply border border-gray-700 px-4 py-2 bg-gray-800 font-semibold text-left; }
-  .markdown-content td { @apply border border-gray-700 px-4 py-2 text-gray-300; }
-  .markdown-content a { @apply text-blue-400 hover:text-blue-300 underline; }
-  .markdown-content strong { @apply font-bold text-gray-100; }
-  .markdown-content em { @apply italic text-gray-200; }
-  .markdown-content hr { @apply border-t border-gray-700 my-6; }
+  .markdown-content { @apply text-text-primary leading-relaxed; }
+  .markdown-content h1 { @apply text-3xl font-bold text-text-primary mb-4 mt-6 border-b-2 border-border pb-2; }
+  .markdown-content h2 { @apply text-2xl font-bold text-text-primary mb-3 mt-5 border-b border-border pb-1; }
+  .markdown-content h3 { @apply text-xl font-bold text-text-primary mb-2 mt-4; }
+  .markdown-content h4 { @apply text-lg font-bold text-text-primary mb-2 mt-3; }
+  .markdown-content h5 { @apply text-base font-bold text-text-primary mb-2 mt-2; }
+  .markdown-content h6 { @apply text-sm font-bold text-text-primary mb-2 mt-2; }
+  .markdown-content p { @apply mb-4 text-text-secondary leading-relaxed; }
+  .markdown-content ul { @apply list-disc list-inside mb-4 space-y-1 text-text-secondary; }
+  .markdown-content ol { @apply list-decimal list-inside mb-4 space-y-1 text-text-secondary; }
+  .markdown-content li { @apply text-text-secondary; }
+  .markdown-content blockquote { @apply border-l-4 border-brand-400 pl-4 not-italic text-text-secondary bg-surface-elevated py-2 my-4 rounded-r; }
+  .markdown-content code { @apply bg-surface-elevated text-semantic-success px-1 py-0.5 rounded text-sm font-mono; }
+  .markdown-content pre code { @apply bg-transparent text-text-primary p-0; }
+  .markdown-content table { @apply min-w-full border-collapse border border-border my-4; }
+  .markdown-content th { @apply border border-border px-4 py-2 bg-surface-elevated font-semibold text-left text-text-primary; }
+  .markdown-content td { @apply border border-border px-4 py-2 text-text-secondary; }
+  .markdown-content a { @apply text-brand-400 underline hover:text-brand-500; }
+  .markdown-content strong { @apply font-bold text-text-primary; }
+  .markdown-content em { @apply italic text-text-secondary; }
+  .markdown-content hr { @apply border-t border-border my-6; }
   .markdown-content img { @apply max-w-full h-auto rounded-lg shadow-md my-4; }
   .markdown-content .math { @apply text-center my-4; }
   .markdown-content .math-inline { @apply mx-1; }
 } /* end @layer base */
+
+/* Light mode — when .dark class is absent */
+html:not(.dark) {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-elevated: #f1f5f9;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-border: #e2e8f0;
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --color-warning: #d97706;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Light-mode markdown content */
+html:not(.dark) .markdown-content {
+  @apply text-text-primary;
+}
+html:not(.dark) .markdown-content p,
+html:not(.dark) .markdown-content ul,
+html:not(.dark) .markdown-content ol,
+html:not(.dark) .markdown-content li,
+html:not(.dark) .markdown-content td {
+  @apply text-text-secondary;
+}
+html:not(.dark) .markdown-content h1,
+html:not(.dark) .markdown-content h2,
+html:not(.dark) .markdown-content h3,
+html:not(.dark) .markdown-content h4,
+html:not(.dark) .markdown-content h5,
+html:not(.dark) .markdown-content h6,
+html:not(.dark) .markdown-content strong {
+  @apply text-text-primary;
+}
+html:not(.dark) .markdown-content h1,
+html:not(.dark) .markdown-content h2 {
+  @apply border-border;
+}
+html:not(.dark) .markdown-content blockquote {
+  @apply bg-surface-elevated border-brand-400 text-text-secondary;
+}
+html:not(.dark) .markdown-content code {
+  @apply bg-surface-elevated text-semantic-success;
+}
+html:not(.dark) .markdown-content pre code {
+  @apply bg-transparent text-text-primary;
+}
+html:not(.dark) .markdown-content th {
+  @apply bg-surface-elevated border-border text-text-primary;
+}
+html:not(.dark) .markdown-content td {
+  @apply border-border;
+}
+html:not(.dark) .markdown-content hr {
+  @apply border-border;
+}
 
 /* Animations (outside layer — beats Tailwind utilities in cascade) */
 @keyframes scale-in {
