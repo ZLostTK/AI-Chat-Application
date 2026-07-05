@@ -20,12 +20,6 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ open, onClose })
     localStorage.setItem('chat:transport', transport);
   }, [transport]);
 
-  // Prevent body scroll when open
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [open]);
-
   return (
     <>
       {/* Backdrop */}

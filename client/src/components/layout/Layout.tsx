@@ -18,11 +18,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigat
     localStorage.setItem('sidebar:expanded', String(expanded));
   }, [expanded]);
 
-  useEffect(() => {
-    document.body.style.overflow = (mobileOpen || settingsOpen) ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [mobileOpen, settingsOpen]);
-
   const handleNewChat = useCallback(() => {
     setMobileOpen(false);
     // Clear messages via global ref set by Chat component
