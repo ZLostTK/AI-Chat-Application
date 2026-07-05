@@ -80,16 +80,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         <div className="code-block-header">
           <span className="code-language">{(language || 'text').toUpperCase()}</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
-            <button className="copy-button inline-flex items-center gap-1" onClick={handleCopy} aria-label="Copiar código" title={copied ? 'Copiado' : 'Copiar código'}>
-              {copied ? (
-                <>
-                  <Check size={14} aria-hidden="true" />
-                </>
-              ) : (
-                <>
-                  <Copy size={14} aria-hidden="true" />
-                </>
-              )}
+            <button className="copy-button inline-flex items-center gap-1 relative" onClick={handleCopy} aria-label="Copiar código" title={copied ? 'Copiado' : 'Copiar código'}>
+              <Copy size={14} aria-hidden="true" className={`transition-opacity duration-300 ${copied ? 'opacity-0' : 'opacity-100'}`} />
+              <Check size={14} aria-hidden="true" className={`absolute transition-opacity duration-300 ${copied ? 'opacity-100' : 'opacity-0'}`} />
             </button>
             <button className="copy-button inline-flex items-center gap-1" onClick={handleAskGemini} aria-label="Preguntar a Gemini" title="Preguntar a Gemini">
               <Bot size={14} aria-hidden="true" />

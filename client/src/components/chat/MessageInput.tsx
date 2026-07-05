@@ -80,7 +80,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isLoading, i
         <button
           onClick={handleSend}
           disabled={disabled || !input.trim()}
-          className="bg-brand-500 text-white rounded-xl p-3 min-w-[44px] h-11 flex items-center justify-center hover:bg-brand-400 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none transition-all"
+          className="bg-brand-500 text-white rounded-xl p-3 min-w-[44px] h-11 flex items-center justify-center hover:bg-brand-400 hover:scale-105 hover:-translate-y-0.5 hover:shadow-md active:scale-95 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none transition-all"
           title="Send message"
           aria-label="Send message"
         >
