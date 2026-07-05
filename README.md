@@ -1,6 +1,6 @@
 # AI ChatBot Application
 
-![Project Preview](./screenshot.png)
+![Project Preview](./screenshots/screenshot.png)
 
 A modern AI chat interface powered by Google Gemini, featuring Markdown rendering, LaTeX math support, code execution, and comprehensive accessibility controls. Supports both HTTP API and WebSocket transport modes.
 
