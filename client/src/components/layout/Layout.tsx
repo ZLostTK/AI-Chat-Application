@@ -1,0 +1,86 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Menu, Bot } from 'lucide-react';
+import { Sidebar } from './Sidebar';
+
+interface LayoutProps {
+  children: React.ReactNode;
+  currentPage: number;
+  onNavigate: (page: number) => void;
+}
+
+export const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigate }) => {
+  const [expanded, setExpanded] = useState(() => localStorage.getItem('sidebar:expanded') !== 'false');
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('sidebar:expanded', String(expanded));
+  }, [expanded]);
+
+  // Prevent body scroll when mobile drawer is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
+  const handleNewChat = useCallback(() => setMobileOpen(false), []);
+  const handleOpenSettings = useCallback(() => setMobileOpen(false), []);
+  const handleNavigate = useCallback((page: number) => {
+    onNavigate(page);
+    setMobileOpen(false);
+  }, [onNavigate]);
+
+  return (
+    <div className="flex h-screen overflow-hidden bg-surface">
+      {/* Mobile sidebar backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar panel */}
+      <div
+        className={`
+          fixed md:relative z-50 md:z-0 h-full
+          transition-transform duration-300 ease-in-out
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:translate-x-0
+          ${expanded ? 'w-72' : 'w-16'}
+          shrink-0
+        `}
+      >
+        <Sidebar
+          expanded={expanded}
+          onToggle={() => setExpanded(!expanded)}
+          onNewChat={handleNewChat}
+          onOpenSettings={handleOpenSettings}
+          onNavigate={handleNavigate}
+          currentPage={currentPage}
+        />
+      </div>
+
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Mobile header */}
+        <div className="md:hidden flex items-center gap-2 px-4 h-14 border-b border-border shrink-0">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="p-2 text-text-secondary hover:text-slate-100 rounded-lg transition-colors"
+            aria-label="Open sidebar"
+          >
+            <Menu size={20} />
+          </button>
+          <Bot size={20} className="text-brand-400" />
+          <span className="text-slate-100 font-semibold">AI ChatBot</span>
+        </div>
+
+        {/* Page content */}
+        <div className="flex-1 overflow-hidden">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -7,3 +7,5 @@ export { default as MarkdownDemo } from './markdown/MarkdownDemo';
 export { default as SimpleMarkdownTest } from './markdown/SimpleMarkdownTest';
 export { AccessibilityProvider } from './accessibility/AccessibilityProvider';
 export { AccessibilityControls } from './accessibility/AccessibilityControls';
+export { Layout } from './layout/Layout';
+export { Sidebar } from './layout/Sidebar';
