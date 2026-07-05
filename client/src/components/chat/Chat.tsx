@@ -1,14 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { MessageCircle, Trash2, Accessibility } from 'lucide-react';
+import { MessageCircle, Trash2 } from 'lucide-react';
 import { useChatApi } from '../../hooks/useChatApi';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import MessageList from '../messages/MessageList';
 import MessageInput from './MessageInput';
-import { AccessibilityControls } from '../accessibility/AccessibilityControls';
 
 const Chat: React.FC = () => {
   const [demoMode, setDemoMode] = useState(false);
-  const [showAccessibility, setShowAccessibility] = useState(false);
 
   const { transport, wsUrl } = useMemo(() => {
     const params = new URLSearchParams(window.location.search);
@@ -56,15 +54,6 @@ const Chat: React.FC = () => {
             {isConnected ? 'Connected' : 'Connecting...'}
           </div>
           <button
-            onClick={() => setShowAccessibility(!showAccessibility)}
-            className="p-2 rounded text-text-secondary hover:bg-surface-elevated hover:text-slate-100 transition-colors"
-            title="Toggle accessibility controls"
-            aria-label="Toggle accessibility controls"
-            aria-pressed={showAccessibility}
-          >
-            <Accessibility size={18} />
-          </button>
-          <button
             onClick={clearMessages}
             className="p-2 rounded text-text-secondary hover:bg-surface-elevated hover:text-slate-100 transition-colors"
             title="Clear chat history"
@@ -87,9 +76,6 @@ const Chat: React.FC = () => {
         isLoading={isLoading}
         isConnected={isConnected}
       />
-
-      {/* Accessibility Controls overlay */}
-      {showAccessibility && <AccessibilityControls />}
     </div>
   );
 };
