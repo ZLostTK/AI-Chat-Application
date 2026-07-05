@@ -70,13 +70,13 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigat
         <div className="md:hidden flex items-center gap-2 px-4 h-14 border-b border-border shrink-0">
           <button
             onClick={() => setMobileOpen(true)}
-            className="p-2 text-text-secondary hover:text-slate-100 rounded-lg transition-colors"
+            className="p-2 text-text-secondary hover:text-text-primary rounded-lg transition-colors"
             aria-label="Open sidebar"
           >
             <Menu size={20} />
           </button>
           <Bot size={20} className="text-brand-400" />
-          <span className="text-slate-100 font-semibold">AI ChatBot</span>
+          <span className="text-text-primary font-semibold">AI ChatBot</span>
         </div>
 
         {/* Page content */}

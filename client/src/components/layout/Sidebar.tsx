@@ -26,7 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {/* Header */}
     <div className="flex items-center gap-2 px-4 h-14 border-b border-border shrink-0">
       <Bot size={24} className="text-brand-400 shrink-0" />
-      {expanded && <span className="text-slate-100 font-semibold truncate">AI ChatBot</span>}
+      {expanded && <span className="text-text-primary font-semibold truncate">AI ChatBot</span>}
     </div>
 
     {/* New Chat button */}
@@ -55,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {group.items.map((title) => (
                 <button
                   key={title}
-                  className="w-full text-left px-2 py-2 text-sm text-text-secondary hover:text-slate-100 hover:bg-surface-elevated rounded-lg transition-colors truncate"
+                  className="w-full text-left px-2 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-elevated rounded-lg transition-colors truncate"
                 >
                   {title}
                 </button>
@@ -75,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className={`w-full flex items-center gap-2 px-2 py-2 text-sm rounded-lg transition-colors ${
             currentPage === id
               ? 'text-brand-400 bg-surface-elevated'
-              : 'text-text-secondary hover:text-slate-100 hover:bg-surface-elevated'
+              : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated'
           }`}
           title={!expanded ? label : undefined}
         >
@@ -89,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <div className="flex items-center gap-1 px-3 h-14 border-t border-border shrink-0">
       <button
         onClick={onOpenSettings}
-        className="flex items-center gap-2 px-2 py-2 text-text-secondary hover:text-slate-100 hover:bg-surface-elevated rounded-lg transition-colors"
+        className="flex items-center gap-2 px-2 py-2 text-text-secondary hover:text-text-primary hover:bg-surface-elevated rounded-lg transition-colors"
         title="Settings"
       >
         <Settings size={18} />
@@ -98,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex-1" />
       <button
         onClick={onToggle}
-        className="p-2 text-text-secondary hover:text-slate-100 rounded-lg transition-colors"
+        className="p-2 text-text-secondary hover:text-text-primary rounded-lg transition-colors"
         title={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
       >
         {expanded ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}

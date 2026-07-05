@@ -72,7 +72,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isLoading, i
             placeholder={placeholder}
             maxLength={1000}
             rows={1}
-            className="w-full px-4 py-2.5 border border-border rounded-xl text-sm bg-surface text-slate-100 resize-none min-h-[44px] max-h-32 leading-relaxed focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-400/10 disabled:opacity-60 disabled:cursor-not-allowed placeholder:text-text-muted transition-colors"
+            className="w-full px-4 py-2.5 border border-border rounded-xl text-sm bg-surface text-text-primary resize-none min-h-[44px] max-h-32 leading-relaxed focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-400/10 disabled:opacity-60 disabled:cursor-not-allowed placeholder:text-text-muted transition-colors"
           />
         </div>
 

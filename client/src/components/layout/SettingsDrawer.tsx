@@ -9,7 +9,7 @@ interface SettingsDrawerProps {
 
 const sectionTitle = 'text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3';
 const radioBase = 'flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-colors cursor-pointer';
-const radioInactive = 'border-border text-text-secondary hover:text-slate-100 hover:border-brand-400/50';
+const radioInactive = 'border-border text-text-secondary hover:text-text-primary hover:border-brand-400/50';
 const radioActive = 'border-brand-500 bg-brand-500/10 text-brand-400';
 
 export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ open, onClose }) => {
@@ -45,10 +45,10 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ open, onClose })
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between px-5 h-14 border-b border-border shrink-0">
-            <h2 className="text-lg font-semibold text-slate-100">Settings</h2>
+            <h2 className="text-lg font-semibold text-text-primary">Settings</h2>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-text-secondary hover:text-slate-100 hover:bg-surface-elevated transition-colors"
+              className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-elevated transition-colors"
               aria-label="Close settings"
             >
               <X size={20} />
@@ -86,7 +86,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ open, onClose })
                 <button
                   onClick={toggleHighContrast}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border transition-colors ${
-                    highContrast ? 'bg-brand-500/10 border-brand-500 text-brand-400' : 'border-border text-text-secondary hover:text-slate-100 hover:bg-surface-elevated'
+                    highContrast ? 'bg-brand-500/10 border-brand-500 text-brand-400' : 'border-border text-text-secondary hover:text-text-primary hover:bg-surface-elevated'
                   }`}
                   aria-pressed={highContrast}
                 >
@@ -107,7 +107,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ open, onClose })
                         key={size}
                         onClick={() => setFontSize(size)}
                         className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                          fontSize === size ? 'bg-brand-500/10 border-brand-500 text-brand-400' : 'border-border text-text-secondary hover:text-slate-100 hover:bg-surface-elevated'
+                          fontSize === size ? 'bg-brand-500/10 border-brand-500 text-brand-400' : 'border-border text-text-secondary hover:text-text-primary hover:bg-surface-elevated'
                         }`}
                       >
                         <Icon size={16} />
@@ -121,7 +121,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ open, onClose })
                 <button
                   onClick={toggleReducedMotion}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border transition-colors ${
-                    reducedMotion ? 'bg-brand-500/10 border-brand-500 text-brand-400' : 'border-border text-text-secondary hover:text-slate-100 hover:bg-surface-elevated'
+                    reducedMotion ? 'bg-brand-500/10 border-brand-500 text-brand-400' : 'border-border text-text-secondary hover:text-text-primary hover:bg-surface-elevated'
                   }`}
                   aria-pressed={reducedMotion}
                 >

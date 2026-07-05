@@ -43,19 +43,19 @@ const Chat: React.FC = () => {
 
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface shrink-0">
-        <h2 className="m-0 text-lg font-semibold text-slate-100 flex items-center gap-2">
+        <h2 className="m-0 text-lg font-semibold text-text-primary flex items-center gap-2">
           <MessageCircle size={20} />
           AI Assistant
         </h2>
         <div className="flex items-center gap-4">
           <span className="text-xs text-text-muted font-medium">{transport.toUpperCase()}</span>
           <div className="flex items-center gap-2 text-sm text-text-secondary">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block" />
+            <span className="w-2 h-2 rounded-full bg-semantic-success animate-pulse inline-block" />
             {isConnected ? 'Connected' : 'Connecting...'}
           </div>
           <button
             onClick={clearMessages}
-            className="p-2 rounded text-text-secondary hover:bg-surface-elevated hover:text-slate-100 transition-colors"
+            className="p-2 rounded text-text-secondary hover:bg-surface-elevated hover:text-text-primary transition-colors"
             title="Clear chat history"
           >
             <Trash2 size={18} />
