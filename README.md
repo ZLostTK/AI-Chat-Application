@@ -1,121 +1,192 @@
-## AI Chat Application [![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ZLostTK/AI-Chat-Application)
+# AI ChatBot
 
-Aplicación de chat con frontend React (Vite + TypeScript) y backend sin WebSocket usando endpoints HTTP compatibles con despliegue gratis en Vercel o Netlify.
+Aplicación de chat con IA usando Gemini API. Soporta texto, generación de imágenes y TTS (text-to-speech) con selección de modelo, historial de conversaciones, tema oscuro/claro y conexión vía HTTP API o WebSocket.
 
-### Requisitos
+---
+
+## Stack
+
+| Capa | Tecnología |
+|---|---|
+| **Frontend** | React 18 + TypeScript + Vite + Tailwind CSS |
+| **Backend** | Express + WebSocket (`ws`) |
+| **IA** | Google Gemini API (SDK `@google/generative-ai`) |
+| **Despliegue** | Vercel (serverless) / Netlify (functions) |
+
+---
+
+## Funcionalidades
+
+### Modelos de IA
+
+- **Texto:** cualquier modelo Gemini que soporte `generateContent` (ej. `gemini-2.5-flash`)
+- **Imagen:** modelos con "image" en el nombre → activa `responseModalities: ['TEXT', 'IMAGE']`, renderiza `inlineData` como markdown
+- **TTS:** modelos con "tts" en el nombre → activa `responseModalities: ['AUDIO']`, usa voz `Kore`, renderiza audio HTML
+- Modelos conocidos inyectados aunque la API no los liste:
+  - `gemini-2.5-flash-preview-image` — Gemini 2.5 Flash Image
+  - `gemini-3.1-flash-tts-preview` — Gemini 3.1 Flash TTS
+- Límite de salida: **500 tokens** por respuesta
+- System instruction: *"Responde de forma breve y concisa. Sé directo, sin rodeos."*
+
+### Transporte
+
+| Modo | Descripción |
+|---|---|
+| **HTTP API** | `fetch('/api/chat')` — serverless (Vercel/Netlify) |
+| **WebSocket** | Conexión persistente en tiempo real (`ws://localhost:3001`) |
+
+Selección por precedencia:
+1. Parámetro URL `?transport=ws|api` (+ `&wsUrl=ws://host:puerto`)
+2. `localStorage('chat:transport')`
+3. `VITE_CHAT_TRANSPORT` / `VITE_WS_URL` en `.env`
+4. Default: `api`
+
+### Gestión de API Key
+
+- Modal al primer inicio (`ApiKeyModal`)
+- Almacenada en `localStorage('gemini:apiKey')`
+- Gestión en SettingsDrawer (ver últimos 4 chars / editar / eliminar)
+- Llamadas directas del navegador a Gemini API cuando hay key (sin proxy)
+- Fallback al servidor cuando no hay key
+
+### Historial de conversaciones
+
+- Guardado automático en `localStorage('chat:conversations')`
+- Agrupado por fecha: Hoy / Ayer / Anteriores
+- Sidebar con título (primer mensaje, 50 chars máx.)
+- Clic para cargar, botón "New Chat" para empezar una nueva
+- Sincronización entre pestañas vía evento `storage`
+
+### Conexión y estado
+
+- Health check cada **30 segundos** (Gemini API directa o `/api/health`)
+- Indicador: Connected (verde), Disconnected (gris), API Key Needed (ámbar)
+- Reconexión automática cada 3s en modo WebSocket
+- Logs en consola del navegador y servidor con el modelo usado
+
+### Tema y accesibilidad
+
+- Modos: Oscuro / Claro / Sistema
+- Alto contraste
+- Tamaño de fuente: Pequeño / Medio / Grande
+- Movimiento reducido
+- Colores vía CSS custom properties (`--color-bg-primary`, `--color-text-primary`, etc.)
+
+### SettingsDrawer
+
+Panel deslizable (desktop: lateral derecho, mobile: bottom sheet 85vh):
+- **Appearance** — Dark / Light / System
+- **Accessibility** — High Contrast, Font Size, Reduced Motion
+- **Connection** — HTTP API / WebSocket
+- **API Key** — mostrar últimos 4 caracteres, botón Change/Add
+- **About** — v1.0.0
+
+### Páginas demo
+
+- Chat (página principal)
+- Markdown Demo (renderizado de markdown)
+- Simple Test (prueba básica)
+
+---
+
+## Requisitos
+
 - Node.js 18+
-- npm o pnpm
-- Opcional (para desarrollo local con funciones):
-  - Vercel CLI o Netlify CLI
+- pnpm (o npm)
+- Opcional: Vercel CLI / Netlify CLI (despliegue local)
 
-### Variables de entorno
-- `GEMINI_API_KEY`: clave de Google Gemini para respuestas reales.
-  - Si no la defines, el backend responde en modo simulación.
+## Variables de entorno
 
-### Estructura relevante
-- `client/`: frontend React (Vite)
-- `api/chat.js`: función HTTP para Vercel (`POST /api/chat`)
-- `netlify/functions/chat.js`: función HTTP para Netlify (redirigida a `/api/chat`)
-- `vercel.json` y `netlify.toml`: configuración de despliegue
-- `server/index.js`: servidor WebSocket de desarrollo (opcional, no requerido)
+| Variable | Dónde | Descripción |
+|---|---|---|
+| `GEMINI_API_KEY` | servidor | Key para respuestas reales (fallback si el cliente no envía) |
+| `VITE_CHAT_TRANSPORT` | `client/.env` | `ws` o `api` |
+| `VITE_WS_URL` | `client/.env` | URL del WebSocket (default `ws://localhost:3001`) |
+| `PORT` | servidor | Puerto del servidor Express+WS (default 3001) |
 
 ---
 
-## Modos de conexión: API HTTP vs WebSocket
+## Estructura del proyecto
 
-El cliente soporta dos transportes: API HTTP (`/api/chat`) y WebSocket. Puedes alternar entre ambos sin cambiar código de negocio.
-
-- API HTTP: usa `useChatApi` con `fetch('/api/chat')`. Ideal para Vercel/Netlify sin WS.
-- WebSocket: usa `useWebSocket(url)` para conexión en tiempo real (por ejemplo, `ws://localhost:3001`).
-
-### Cómo alternar el transporte
-
-Orden de precedencia para seleccionar transporte (de mayor a menor):
-1. Parámetro de URL `?transport=ws|api` y opcional `&wsUrl=ws://host:puerto`
-2. `localStorage.setItem('chat:transport','ws'|'api')`
-3. Variable de entorno `VITE_CHAT_TRANSPORT=ws|api` y `VITE_WS_URL=ws://host:puerto`
-4. Valor por defecto: `api`
-
-El componente `Chat` detecta esto automáticamente al montar:
-
-- Si `transport=ws`, usará `useWebSocket` apuntando a `VITE_WS_URL` o `ws://localhost:3001` si no está definida.
-- Si `transport=api`, usará `useChatApi`.
-
-En la UI, verás una etiqueta `API` o `WS` junto al estado de conexión; en modo WS también muestra la URL.
-
-### Ejemplos rápidos
-
-- Forzar HTTP API temporalmente (URL):
-  `http://localhost:5173/?transport=api`
-
-- Forzar WebSocket con URL explícita (URL):
-  `http://localhost:5173/?transport=ws&wsUrl=ws://localhost:3001`
-
-- Persistir preferencia en el navegador (desde consola dev):
-  ```js
-  localStorage.setItem('chat:transport', 'ws');
-  // opcionalmente:
-  localStorage.setItem('chat:transport', 'api');
-  ```
-
-- Configurar por variables de entorno (crear `.env` en `client/` o exportar antes de dev/build):
-  ```bash
-  # client/.env.local
-  VITE_CHAT_TRANSPORT=ws   # o api
-  VITE_WS_URL=ws://localhost:3001
-  ```
-
-### Consejos para depurar WebSocket
-
-- Asegúrate de que el servidor WS está arrancado y accesible desde el navegador:
-  ```bash
-  cd server
-  npm install
-  node index.js  # ws://localhost:3001
-  ```
-- Comprueba CORS/CSR: los WS no usan CORS, pero proxies/dev servers pueden bloquear si usas wss sin certificado válido.
-- Observa la consola del navegador: el hook `useWebSocket` loguea eventos (open, message, close, reconnect).
-- El cliente reintenta la conexión automáticamente cada 3s si se corta.
-
-Si ves "error al conectar" en modo WS, revisa:
-- Que `ws://localhost:3001` sea alcanzable (puerto abierto, sin firewall).
-- Que el servidor envíe JSON con `{ sender: 'ai', text: '...' }` para respuestas.
-- Que no haya colisiones con el proxy del dev server (puedes probar con `?wsUrl=ws://127.0.0.1:3001`).
-
----
-
-## Despliegue en producción
-
-### Vercel
-1) Configurar variable `GEMINI_API_KEY` en Settings → Environment Variables.
-2) Conectar el repositorio y desplegar.
-   - `vercel.json`:
-     - Construye el frontend (`client`) como estático.
-     - Expone la función `api/chat.js` en `/api/chat`.
-
-### Netlify
-1) Configurar variable `GEMINI_API_KEY` en Site settings → Environment variables.
-2) Conectar el repositorio y desplegar.
-   - `netlify.toml`:
-     - Construye el frontend (`client/dist`).
-     - Redirige `/api/*` a `/.netlify/functions/*` (nuestra `functions/chat.js`).
-
----
-
-## Desarrollo opcional con WebSocket (local)
-El archivo `server/index.js` mantiene un servidor WS para pruebas locales. El frontend actual está preparado para HTTP; si deseas usar WS, necesitarías restaurar el hook de WS en `client` y apuntar a `ws://localhost:3001`.
-
-Para arrancar el WS localmente:
-```bash
-cd server
-npm install
-node index.js
-# Servirá en ws://localhost:3001
+```
+├── client/                        # Frontend React + Vite
+│   └── src/
+│       ├── components/
+│       │   ├── accessibility/     # AccessibilityProvider, contexto de tema
+│       │   ├── chat/              # Chat, MessageInput, MessageList, MessageItem
+│       │   ├── layout/            # Layout, Sidebar, SettingsDrawer, ApiKeyModal, WelcomeScreen
+│       │   ├── markdown/          # MarkdownRenderer (audio, imágenes, código)
+│       │   └── messages/          # MessageItem, MessageList
+│       ├── hooks/
+│       │   ├── useChatApi.ts      # Hook HTTP directo a Gemini API
+│       │   └── useWebSocket.ts    # Hook WebSocket con reconexión automática
+│       ├── utils/
+│       │   └── messageFormatter.ts
+│       ├── App.tsx
+│       ├── index.css              # Temas CSS variables, animaciones
+│       └── main.tsx
+├── server/
+│   └── index.js                   # Express + WebSocket + Gemini SDK
+├── api/
+│   ├── chat.js                    # Función serverless Vercel
+│   └── health.js                  # Health check endpoint
+├── netlify/
+│   └── functions/chat.js          # Función serverless Netlify
+├── vercel.json
+└── netlify.toml
 ```
 
 ---
 
+## Desarrollo local
+
+```bash
+# 1. Cliente
+cd client
+pnpm install
+pnpm dev          # http://localhost:5173
+
+# 2. (Opcional) Servidor Express + WebSocket
+cd server
+pnpm install
+node index.js     # ws://localhost:3001 + /api/health + /api/chat
+```
+
+Forzar modo WebSocket:
+```
+http://localhost:5173/?transport=ws&wsUrl=ws://localhost:3001
+```
+
+Forzar modo HTTP API:
+```
+http://localhost:5173/?transport=api
+```
+
+---
+
+## Despliegue
+
+### Vercel
+
+1. Configurar `GEMINI_API_KEY` en Settings → Environment Variables
+2. Conectar repositorio y desplegar
+   - `vercel.json` construye `client/` como estático y expone `api/chat.js`
+
+### Netlify
+
+1. Configurar `GEMINI_API_KEY` en Site settings → Environment variables
+2. Conectar repositorio y desplegar
+   - `netlify.toml` construye `client/dist` y redirige `/api/*` a `/.netlify/functions/*`
+
+---
+
 ## Solución de problemas
-- 404 en `/api/chat` en local: asegúrate de usar `netlify dev` o `vercel dev` desde la raíz.
-- Respuesta "Simulación": define `GEMINI_API_KEY` en el entorno.
-- Node < 18: actualiza Node (se usa `fetch` nativo en funciones Vercel/Netlify).
+
+| Problema | Causa |
+|---|---|
+| 404 en `/api/chat` local | Usar `netlify dev` o `vercel dev` desde la raíz |
+| Respuesta "Simulación" | Falta `GEMINI_API_KEY` en el entorno |
+| 429 Too Many Requests | Cuota gratuita agotada, esperar o usar key de pago |
+| WebSocket no conecta | Puerto incorrecto, proxy bloqueando, usar `?wsUrl=` para debug |
+| Imagen no se genera | El modelo debe contener "image" en el nombre (ej. `gemini-2.5-flash-preview-image`) |
+| Node < 18 | Actualizar Node (se usa `fetch` nativo) |
