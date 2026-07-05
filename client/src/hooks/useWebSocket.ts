@@ -16,7 +16,7 @@ interface UseWebSocketReturn {
   loadMessages: (msgs: Message[]) => void;
 }
 
-export const useWebSocket = (url: string): UseWebSocketReturn => {
+export const useWebSocket = (url: string, apiKey?: string): UseWebSocketReturn => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -135,7 +135,10 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN && message.trim() && !isLoading) {
       try {
         // Send message to server
-        ws.current.send(JSON.stringify({ message: message.trim() }));
+        ws.current.send(JSON.stringify({
+          message: message.trim(),
+          apiKey: apiKey || undefined,
+        }));
         
         // Add user message immediately
         const userMessage: Message = {

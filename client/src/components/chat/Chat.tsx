@@ -52,7 +52,7 @@ const Chat: React.FC<ChatProps> = () => {
   }, []);
 
   const chatApi = useChatApi(apiKey);
-  const chatWs = useWebSocket(wsUrl);
+  const chatWs = useWebSocket(wsUrl, apiKey);
   const { messages, isConnected, isLoading, sendMessage, clearMessages, loadMessages } = transport === 'ws' ? chatWs : chatApi;
 
   // Fetch available models from Gemini API
