@@ -83,6 +83,7 @@ web_modules/
 .DS_Store
 
 ### Project-specific ignores ###
+.codebase-memory
 
 # Client directory
 /client/node_modules
@@ -102,3 +103,7 @@ web_modules/
 /server/*.tsbuildinfo
 /server/package-lock.json
 /server/pnpm-lock.yaml
+# Root-level artifacts (pnpm workspace leftovers)
+/package.json
+/pnpm-lock.yaml
+/server/pnpm-workspace.yaml

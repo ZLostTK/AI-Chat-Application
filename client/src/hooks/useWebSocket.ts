@@ -11,11 +11,12 @@ interface UseWebSocketReturn {
   messages: Message[];
   isConnected: boolean;
   isLoading: boolean;
-  sendMessage: (message: string) => void;
+  sendMessage: (message: string, model?: string) => void;
   clearMessages: () => void;
+  loadMessages: (msgs: Message[]) => void;
 }
 
-export const useWebSocket = (url: string): UseWebSocketReturn => {
+export const useWebSocket = (url: string, apiKey?: string): UseWebSocketReturn => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -130,11 +131,15 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
     };
   }, [url]);
 
-  const sendMessage = (message: string) => {
+  const sendMessage = (message: string, model?: string) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN && message.trim() && !isLoading) {
       try {
         // Send message to server
-        ws.current.send(JSON.stringify({ message: message.trim() }));
+        ws.current.send(JSON.stringify({
+          message: message.trim(),
+          apiKey: apiKey || undefined,
+          model: model || undefined,
+        }));
         
         // Add user message immediately
         const userMessage: Message = {
@@ -167,11 +172,16 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
     setMessages([]);
   };
 
+  const loadMessages = (msgs: Message[]) => {
+    setMessages(msgs);
+  };
+
   return {
     messages,
     isConnected,
     isLoading,
     sendMessage,
-    clearMessages
+    clearMessages,
+    loadMessages,
   };
 };

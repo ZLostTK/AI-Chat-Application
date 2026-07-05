@@ -9,28 +9,40 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // Inicializar Express + HTTP + WebSocket
 const app = express();
+app.use(express.json());
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-// Inicializar Gemini si hay API Key
+// Inicializar Gemini si hay API Key (env fallback)
 let genAI = null;
 if (GEMINI_API_KEY) {
-  genAI = new GoogleGenerativeAI(GEMINI_API_KEY); // Inicialización correcta
-  console.log('✅ Gemini API key configurada');
+  genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  console.log('✅ Gemini API key configurada desde env');
 } else {
-  console.warn('⚠️ No hay GEMINI_API_KEY, se usarán respuestas simuladas');
+  console.warn('⚠️ No hay GEMINI_API_KEY en env, se aceptarán keys desde el cliente');
 }
 
-// Función genérica de conversación
-const callGeminiAPI = async (message) => {
-  if (!genAI) {
+// Obtener o inicializar genAI para una key específica
+function getGenAI(apiKey) {
+  if (!apiKey) return genAI; // fallback a env
+  return new GoogleGenerativeAI(apiKey);
+}
+
+// Función genérica de conversación (acepta apiKey y modelo opcionales)
+const callGeminiAPI = async (message, apiKey, modelName = 'gemini-2.5-flash') => {
+  const ai = getGenAI(apiKey);
+  if (!ai) {
     return `Simulación: recibí tu mensaje "${message}"`;
   }
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    console.log(`[Server] model=${modelName} via callGeminiAPI`);
+    const model = ai.getGenerativeModel({
+      model: modelName,
+      systemInstruction: 'Responde de forma breve y concisa. Sé directo, sin rodeos.',
+      generationConfig: { maxOutputTokens: 500 },
+    });
     const result = await model.generateContent(message);
     const response = await result.response;
-    console.log('La respuesta se ha enviado ✅')
     return response.text();
   } catch (error) {
     console.error('❌ Error llamando a Gemini:', error);
@@ -38,9 +50,39 @@ const callGeminiAPI = async (message) => {
   }
 };
 
+// HTTP endpoint para /api/chat (útil en desarrollo local sin Vercel)
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { message, apiKey, model: modelName } = req.body || {};
+    const userText = String(message || '').slice(0, 4000);
+    const finalModel = modelName || 'gemini-2.5-flash';
+    console.log(`[Server] POST /api/chat model=${finalModel}`);
+    const ai = apiKey ? new GoogleGenerativeAI(apiKey) : genAI;
+    if (!ai) {
+      return res.json({ sender: 'ai', text: 'No API key configured. Add one in Settings.' });
+    }
+    const model = ai.getGenerativeModel({
+      model: finalModel,
+      systemInstruction: 'Responde de forma breve y concisa. Sé directo, sin rodeos.',
+      generationConfig: { maxOutputTokens: 500 },
+    });
+    const result = await model.generateContent(userText);
+    const response = await result.response;
+    res.json({ sender: 'ai', text: response.text() || 'No response.' });
+  } catch (err) {
+    console.error('❌ Error en /api/chat:', err);
+    res.status(500).json({ error: 'Error processing request' });
+  }
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 // Función para ejecutar código con Gemini Code Execution (Python)
-const executeCodeWithGemini = async ({ language = 'python', code = '' }) => {
-  if (!genAI) {
+const executeCodeWithGemini = async ({ language = 'python', code = '' }, apiKey) => {
+  const ai = getGenAI(apiKey);
+  if (!ai) {
     return 'Simulación de ejecución: entorno no configurado.';
   }
   try {
@@ -87,41 +129,39 @@ const executeCodeWithGemini = async ({ language = 'python', code = '' }) => {
   }
 };
 
-// Resto del código permanece igual...
 wss.on('connection', (ws) => {
   console.log('🔌 Cliente conectado');
 
   ws.on('message', async (message) => {
     try {
-      // Parse the incoming message
       const parsedMessage = JSON.parse(message.toString());
       const userMessage = parsedMessage.message;
-      console.log(`📩 Mensaje recibido: ${userMessage}`);
+      const apiKey = parsedMessage.apiKey; // client-provided key
+      const modelName = parsedMessage.model || 'gemini-2.5-flash';
+      console.log(`📩 Mensaje recibido: ${userMessage?.slice(0, 50)}... [Server] model=${modelName}`);
 
       let aiResponse;
       if (typeof userMessage === 'string' && userMessage.startsWith('::EXEC_CODE::')) {
         try {
           const payload = JSON.parse(userMessage.replace('::EXEC_CODE::', ''));
-          aiResponse = await executeCodeWithGemini(payload || {});
+          aiResponse = await executeCodeWithGemini(payload || {}, apiKey);
         } catch (err) {
           console.error('❌ Payload de ejecución inválido:', err);
           aiResponse = 'Error: payload de ejecución inválido.';
         }
       } else {
-        aiResponse = await callGeminiAPI(userMessage);
+        aiResponse = await callGeminiAPI(userMessage, apiKey, modelName);
       }
 
-      // Send response back to the specific client that sent the message
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ sender: 'ai', text: aiResponse }));
       }
     } catch (error) {
       console.error('❌ Error procesando mensaje:', error);
-      // Send error response back to client
       if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ 
+        ws.send(JSON.stringify({
           sender: 'ai',
-          text: 'Error: No se pudo procesar tu mensaje.' 
+          text: 'Error: No se pudo procesar tu mensaje.'
         }));
       }
     }

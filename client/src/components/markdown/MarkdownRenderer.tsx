@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
 import 'katex/dist/katex.min.css';
 import 'highlight.js/styles/dark.css';
 import hljs from 'highlight.js';
@@ -80,16 +81,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         <div className="code-block-header">
           <span className="code-language">{(language || 'text').toUpperCase()}</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
-            <button className="copy-button inline-flex items-center gap-1" onClick={handleCopy} aria-label="Copiar código" title={copied ? 'Copiado' : 'Copiar código'}>
-              {copied ? (
-                <>
-                  <Check size={14} aria-hidden="true" />
-                </>
-              ) : (
-                <>
-                  <Copy size={14} aria-hidden="true" />
-                </>
-              )}
+            <button className="copy-button inline-flex items-center gap-1 relative" onClick={handleCopy} aria-label="Copiar código" title={copied ? 'Copiado' : 'Copiar código'}>
+              <Copy size={14} aria-hidden="true" className={`transition-opacity duration-300 ${copied ? 'opacity-0' : 'opacity-100'}`} />
+              <Check size={14} aria-hidden="true" className={`absolute transition-opacity duration-300 ${copied ? 'opacity-100' : 'opacity-0'}`} />
             </button>
             <button className="copy-button inline-flex items-center gap-1" onClick={handleAskGemini} aria-label="Preguntar a Gemini" title="Preguntar a Gemini">
               <Bot size={14} aria-hidden="true" />
@@ -107,14 +101,14 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             )}
           </div>
         </div>
-        <pre className="hljs bg-gray-900 rounded-lg p-4 overflow-x-auto">
+        <pre className="hljs bg-surface-card rounded-lg p-4 overflow-x-auto">
           <code
             className={`language-${language || ''}`}
             dangerouslySetInnerHTML={{ __html: highlightedHtml }}
           />
         </pre>
         {output.length > 0 && (
-          <div style={{ background: '#0f172a', border: '1px solid var(--border-color)', borderTop: 'none', padding: '0.75rem 1rem', fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace', fontSize: '0.875rem', color: 'var(--text-primary)' }}>
+          <div style={{ background: '#0f172a', border: '1px solid var(--color-border)', borderTop: 'none', padding: '0.75rem 1rem', fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace', fontSize: '0.875rem', color: 'var(--color-text-primary)' }}>
             {output.map((line, idx) => (
               <div key={idx}>{line}</div>
             ))}
@@ -124,11 +118,17 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     );
   };
 
+  // Pre-process: convert audio tags to HTML for rehype-raw
+  const processedContent = content.replace(
+    /\[audio:data:([^;]+);base64,([^\]]+)\]/g,
+    (_, mime, b64) => `<audio controls src="data:${mime};base64,${b64}" class="w-full max-w-md my-2 rounded-lg"></audio>`
+  );
+
   return (
     <div className={`markdown-content ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeKatex]}
+        rehypePlugins={[rehypeKatex, rehypeRaw]}
         components={{
           code(compProps) {
             const { node, inline, className, children, ...props } = compProps as any;
@@ -169,7 +169,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
               return <CodeBlock code={codeText} language={match[1]} />;
             }
             return (
-              <code className="bg-gray-800 text-green-400 px-1 py-0.5 rounded text-sm" {...(props as any)}>
+              <code className="bg-surface-elevated text-semantic-success px-1 py-0.5 rounded text-sm" {...(props as any)}>
                 {children}
               </code>
             );

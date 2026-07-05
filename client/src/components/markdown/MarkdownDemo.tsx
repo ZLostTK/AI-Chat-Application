@@ -87,8 +87,8 @@ Este componente demuestra el soporte completo para:
 `;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-900 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold text-center mb-8 text-gray-100 flex items-center justify-center gap-2">
+    <div className="max-w-4xl mx-auto p-6 bg-surface-card rounded-lg shadow-lg">
+      <h1 className="text-3xl font-bold text-center mb-8 text-text-primary flex items-center justify-center gap-2">
         <Rocket size={28} aria-hidden="true" />
         <span>Demo: Markdown + LaTeX + Code Highlighting</span>
       </h1>

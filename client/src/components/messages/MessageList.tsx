@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useAccessibility } from '../accessibility/AccessibilityProvider';
 import MessageItem from './MessageItem';
+import { WelcomeScreen } from '../layout/WelcomeScreen';
 
 interface Message {
   sender: 'user' | 'ai';
@@ -11,35 +12,30 @@ interface Message {
 interface MessageListProps {
   messages: Message[];
   onAction?: (message: string) => void;
+  onSendMessage?: (message: string) => void;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages, onAction }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, onAction, onSendMessage }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { reducedMotion } = useAccessibility();
 
-  const scrollToBottom = () => {
-    if (reducedMotion) return; // Evitar desplazamientos en modo de movimiento reducido
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (!reducedMotion) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, reducedMotion]);
 
   if (messages.length === 0) {
     return (
-      <div className="messages">
-        <div className="welcome-message">
-          <h3>Welcome to AI Chat</h3>
-          <p>Start a conversation by typing a message below.</p>
-        </div>
+      <div className="flex-1 overflow-y-auto bg-surface-elevated flex flex-col">
+        <WelcomeScreen onSendMessage={onSendMessage} />
         <div ref={messagesEndRef} />
       </div>
     );
   }
 
   return (
-    <div className="messages">
+    <div className="flex-1 overflow-y-auto p-4 bg-surface-elevated flex flex-col gap-4">
       {messages.map((message, index) => (
         <MessageItem key={index} message={message} onAction={onAction} />
       ))}
