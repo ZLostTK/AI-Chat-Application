@@ -73,7 +73,21 @@ const Chat: React.FC<ChatProps> = () => {
             .map((m: any) => ({
               value: m.name.replace('models/', ''),
               label: m.displayName || m.name.replace('models/', ''),
-            }));
+            }))
+            // Also add known image/TTS models that respond via generateContent
+            .concat(
+              ['imagen', 'banana', 'veo'].some(t => data._knownTypes?.length) ? [] : []
+            );
+          // Always inject well-known image/TTS models so they appear even if not listed
+          const knownExtra = [
+            { value: 'gemini-2.5-flash-image', label: 'Gemini 2.5 Flash Image' },
+            { value: 'gemini-3.1-flash-tts-preview', label: 'Gemini 3.1 Flash TTS' },
+          ];
+          for (const extra of knownExtra) {
+            if (!geminiModels.find(m => m.value === extra.value)) {
+              geminiModels.push(extra);
+            }
+          }
           if (geminiModels.length > 0) setModels(geminiModels);
         }
       } catch { /* keep defaults */ }

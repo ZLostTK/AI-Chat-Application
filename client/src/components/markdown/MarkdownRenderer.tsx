@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
 import 'katex/dist/katex.min.css';
 import 'highlight.js/styles/dark.css';
 import hljs from 'highlight.js';
@@ -117,11 +118,17 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     );
   };
 
+  // Pre-process: convert audio tags to HTML for rehype-raw
+  const processedContent = content.replace(
+    /\[audio:data:([^;]+);base64,([^\]]+)\]/g,
+    (_, mime, b64) => `<audio controls src="data:${mime};base64,${b64}" class="w-full max-w-md my-2 rounded-lg"></audio>`
+  );
+
   return (
     <div className={`markdown-content ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeKatex]}
+        rehypePlugins={[rehypeKatex, rehypeRaw]}
         components={{
           code(compProps) {
             const { node, inline, className, children, ...props } = compProps as any;

@@ -103,3 +103,7 @@ web_modules/
 /server/*.tsbuildinfo
 /server/package-lock.json
 /server/pnpm-lock.yaml
+# Root-level artifacts (pnpm workspace leftovers)
+/package.json
+/pnpm-lock.yaml
+/server/pnpm-workspace.yaml

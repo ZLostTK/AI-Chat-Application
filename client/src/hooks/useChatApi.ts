@@ -73,27 +73,55 @@ export const useChatApi = (apiKey?: string): UseChatApiReturn => {
       let aiText = '';
 
       if (apiKey) {
-        // Call Gemini API directly from the browser
         const modelName = model || 'gemini-2.5-flash';
+        const isImageModel = modelName.toLowerCase().includes('image');
+        const isTtsModel = modelName.toLowerCase().includes('tts');
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+        // Build generation config based on model type
+        const genConfig: any = {};
+        if (isImageModel) {
+          genConfig.responseModalities = ['TEXT', 'IMAGE'];
+        } else if (isTtsModel) {
+          genConfig.responseModalities = ['audio'];
+          genConfig.speechConfig = [{ voice: 'Kore' }];
+        }
+
+        const body: any = {
+          contents: [{ role: 'user', parts: [{ text: message.trim() }] }],
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+          ],
+        };
+        if (Object.keys(genConfig).length > 0) body.generationConfig = genConfig;
+
         const resp = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ role: 'user', parts: [{ text: message.trim() }] }],
-            safetySettings: [
-              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-            ],
-          }),
+          body: JSON.stringify(body),
         });
         const data = await resp.json();
         if (!resp.ok) {
           aiText = `API error: ${data?.error?.message || resp.statusText}`;
         } else {
-          aiText = (data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join('') || '').trim();
+          const parts: any[] = data?.candidates?.[0]?.content?.parts || [];
+          const textParts: string[] = [];
+          const mediaHtml: string[] = [];
+          for (const p of parts) {
+            if (p.text) textParts.push(p.text);
+            if (p.inlineData) {
+              const { mimeType, data: b64 } = p.inlineData;
+              if (mimeType?.startsWith('image/')) {
+                mediaHtml.push(`![Generated Image](data:${mimeType};base64,${b64})`);
+              } else if (mimeType?.startsWith('audio/')) {
+                mediaHtml.push(`[audio:data:${mimeType};base64,${b64}]`);
+              }
+            }
+          }
+          aiText = [...textParts, ...mediaHtml].join('\n\n').trim();
           if (!aiText) aiText = 'No response from model.';
         }
       } else {
