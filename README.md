@@ -2,6 +2,8 @@
 
 Aplicación de chat con IA usando Gemini API. Soporta texto, generación de imágenes y TTS (text-to-speech) con selección de modelo, historial de conversaciones, tema oscuro/claro y conexión vía HTTP API o WebSocket.
 
+![Captura de pantalla](screenshots/screenshot.webp)
+
 ---
 
 ## Stack
