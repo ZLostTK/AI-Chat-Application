@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Menu, Bot } from 'lucide-react';
 import { Sidebar } from './Sidebar';
+import { SettingsDrawer } from './SettingsDrawer';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,19 +12,20 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigate }) => {
   const [expanded, setExpanded] = useState(() => localStorage.getItem('sidebar:expanded') !== 'false');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('sidebar:expanded', String(expanded));
   }, [expanded]);
 
-  // Prevent body scroll when mobile drawer is open
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    document.body.style.overflow = (mobileOpen || settingsOpen) ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [mobileOpen]);
+  }, [mobileOpen, settingsOpen]);
 
   const handleNewChat = useCallback(() => setMobileOpen(false), []);
-  const handleOpenSettings = useCallback(() => setMobileOpen(false), []);
+  const handleOpenSettings = useCallback(() => { setMobileOpen(false); setSettingsOpen(true); }, []);
+  const handleCloseSettings = useCallback(() => setSettingsOpen(false), []);
   const handleNavigate = useCallback((page: number) => {
     onNavigate(page);
     setMobileOpen(false);
@@ -31,6 +33,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigat
 
   return (
     <div className="flex h-screen overflow-hidden bg-surface">
+      <SettingsDrawer open={settingsOpen} onClose={handleCloseSettings} />
       {/* Mobile sidebar backdrop */}
       {mobileOpen && (
         <div
