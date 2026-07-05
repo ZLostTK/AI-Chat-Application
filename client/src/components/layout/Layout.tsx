@@ -23,17 +23,37 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigat
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen, settingsOpen]);
 
-  const handleNewChat = useCallback(() => setMobileOpen(false), []);
-  const handleOpenSettings = useCallback(() => { setMobileOpen(false); setSettingsOpen(true); }, []);
+  const handleNewChat = useCallback(() => {
+    setMobileOpen(false);
+    // Clear messages via global ref set by Chat component
+    (window as any).__chatClearMessages?.();
+  }, []);
+
+  const handleOpenSettings = useCallback(() => {
+    setMobileOpen(false);
+    setSettingsOpen(true);
+  }, []);
+
   const handleCloseSettings = useCallback(() => setSettingsOpen(false), []);
+
   const handleNavigate = useCallback((page: number) => {
     onNavigate(page);
     setMobileOpen(false);
   }, [onNavigate]);
 
+  // Sidebar toggle: on mobile it opens/closes the sidebar; on desktop it expands/collapses
+  const handleToggle = useCallback(() => {
+    if (window.innerWidth < 768) {
+      setMobileOpen(prev => !prev);
+    } else {
+      setExpanded(prev => !prev);
+    }
+  }, []);
+
   return (
     <div className="flex h-screen overflow-hidden bg-surface">
       <SettingsDrawer open={settingsOpen} onClose={handleCloseSettings} />
+
       {/* Mobile sidebar backdrop */}
       {mobileOpen && (
         <div
@@ -56,7 +76,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigat
       >
         <Sidebar
           expanded={expanded}
-          onToggle={() => setExpanded(!expanded)}
+          onToggle={handleToggle}
           onNewChat={handleNewChat}
           onOpenSettings={handleOpenSettings}
           onNavigate={handleNavigate}

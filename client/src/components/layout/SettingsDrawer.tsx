@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sun, Moon, Monitor, Eye, EyeOff, Move, Type, ZoomIn, ZoomOut, Cog, Wifi, Server } from 'lucide-react';
+import { X, Sun, Moon, Monitor, Eye, EyeOff, Move, Type, ZoomIn, ZoomOut, Cog, Wifi, Server, Key } from 'lucide-react';
 import { useAccessibility } from '../accessibility/AccessibilityProvider';
 
 interface SettingsDrawerProps {
@@ -150,6 +150,42 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({ open, onClose })
                   </button>
                 ))}
               </div>
+            </section>
+
+            {/* API Key */}
+            <section>
+              <h3 className={sectionTitle}>API Key</h3>
+              <div className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border">
+                <Key size={18} className="text-text-muted shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-text-secondary truncate">
+                    {localStorage.getItem('gemini:apiKey')
+                      ? `••••${localStorage.getItem('gemini:apiKey')!.slice(-4)}`
+                      : 'Not configured'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    const key = prompt('Enter your Gemini API key:');
+                    if (key && key.trim()) {
+                      localStorage.setItem('gemini:apiKey', key.trim());
+                      window.location.reload();
+                    } else if (key === '') {
+                      localStorage.removeItem('gemini:apiKey');
+                      window.location.reload();
+                    }
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-brand-500 text-white text-xs font-medium hover:bg-brand-400 transition-colors shrink-0"
+                >
+                  {localStorage.getItem('gemini:apiKey') ? 'Change' : 'Add'}
+                </button>
+              </div>
+              <p className="text-xs text-text-muted mt-1">
+                Get a free key at{' '}
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-brand-400 underline">
+                  AI Studio
+                </a>
+              </p>
             </section>
 
             {/* About */}
