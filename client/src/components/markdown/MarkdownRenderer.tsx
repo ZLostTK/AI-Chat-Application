@@ -100,14 +100,14 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             )}
           </div>
         </div>
-        <pre className="hljs bg-gray-900 rounded-lg p-4 overflow-x-auto">
+        <pre className="hljs bg-surface-card rounded-lg p-4 overflow-x-auto">
           <code
             className={`language-${language || ''}`}
             dangerouslySetInnerHTML={{ __html: highlightedHtml }}
           />
         </pre>
         {output.length > 0 && (
-          <div style={{ background: '#0f172a', border: '1px solid var(--border-color)', borderTop: 'none', padding: '0.75rem 1rem', fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace', fontSize: '0.875rem', color: 'var(--text-primary)' }}>
+          <div style={{ background: '#0f172a', border: '1px solid var(--color-border)', borderTop: 'none', padding: '0.75rem 1rem', fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace', fontSize: '0.875rem', color: 'var(--color-text-primary)' }}>
             {output.map((line, idx) => (
               <div key={idx}>{line}</div>
             ))}
@@ -162,7 +162,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
               return <CodeBlock code={codeText} language={match[1]} />;
             }
             return (
-              <code className="bg-gray-800 text-green-400 px-1 py-0.5 rounded text-sm" {...(props as any)}>
+              <code className="bg-surface-elevated text-semantic-success px-1 py-0.5 rounded text-sm" {...(props as any)}>
                 {children}
               </code>
             );

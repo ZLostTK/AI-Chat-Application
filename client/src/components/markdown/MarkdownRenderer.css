@@ -39,6 +39,15 @@
   @apply text-gray-300;
 }
 
+/* Light-mode syntax highlighting — code block bg becomes light, text dark */
+html:not(.dark) .markdown-content .hljs {
+  @apply bg-surface-elevated text-text-primary;
+}
+html:not(.dark) .markdown-content .hljs-comment,
+html:not(.dark) .markdown-content .hljs-params {
+  @apply text-text-muted;
+}
+
 .markdown-content .hljs-literal {
   @apply text-cyan-400;
 }

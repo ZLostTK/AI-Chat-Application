@@ -22,8 +22,8 @@ $E = mc^2$
 `;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-900 rounded-lg shadow-lg">
-      <h2 className="text-3xl font-bold mb-6 text-gray-100 text-center flex items-center justify-center gap-2">
+    <div className="max-w-4xl mx-auto p-6 bg-surface-card rounded-lg shadow-lg">
+      <h2 className="text-3xl font-bold mb-6 text-text-primary text-center flex items-center justify-center gap-2">
         <FlaskConical size={24} aria-hidden="true" />
         <span>Test de Markdown</span>
       </h2>
