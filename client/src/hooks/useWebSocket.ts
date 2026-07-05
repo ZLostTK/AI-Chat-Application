@@ -13,6 +13,7 @@ interface UseWebSocketReturn {
   isLoading: boolean;
   sendMessage: (message: string) => void;
   clearMessages: () => void;
+  loadMessages: (msgs: Message[]) => void;
 }
 
 export const useWebSocket = (url: string): UseWebSocketReturn => {
@@ -167,11 +168,16 @@ export const useWebSocket = (url: string): UseWebSocketReturn => {
     setMessages([]);
   };
 
+  const loadMessages = (msgs: Message[]) => {
+    setMessages(msgs);
+  };
+
   return {
     messages,
     isConnected,
     isLoading,
     sendMessage,
-    clearMessages
+    clearMessages,
+    loadMessages,
   };
 };

@@ -1,21 +1,36 @@
-import React, { useState, useRef, useCallback, KeyboardEvent } from 'react';
+import React, { useState, useRef, useCallback, KeyboardEvent, useEffect } from 'react';
 import { Send } from 'lucide-react';
 
-interface MessageInputProps {
-  onSendMessage: (message: string) => void;
-  isLoading: boolean;
-  isConnected: boolean;
-}
-
-const models = [
+const DEFAULT_MODELS = [
   { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
   { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
 ];
 
-const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isLoading, isConnected }) => {
+interface MessageInputProps {
+  onSendMessage: (message: string, model?: string) => void;
+  isLoading: boolean;
+  isConnected: boolean;
+  models?: { value: string; label: string }[];
+  apiKey?: string;
+  transport?: string;
+}
+
+const MessageInput: React.FC<MessageInputProps> = ({
+  onSendMessage, isLoading, isConnected,
+  models, apiKey, transport,
+}) => {
   const [input, setInput] = useState('');
   const [model, setModel] = useState('gemini-2.5-flash');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Use dynamic models if available, fall back to defaults
+  const modelList = (models && models.length > 0) ? models : DEFAULT_MODELS;
+
+  // Reset model to first available if current selection is invalid
+  useEffect(() => {
+    const valid = modelList.find(m => m.value === model);
+    if (!valid && modelList.length > 0) setModel(modelList[0].value);
+  }, [modelList, model]);
 
   const autoResize = useCallback(() => {
     const ta = textareaRef.current;
@@ -26,12 +41,9 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isLoading, i
 
   const handleSend = () => {
     if (input.trim() && !isLoading && isConnected) {
-      onSendMessage(input.trim());
+      onSendMessage(input.trim(), model);
       setInput('');
-      // Reset textarea height
-      if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
-      }
+      if (textareaRef.current) textareaRef.current.style.height = 'auto';
     }
   };
 
@@ -43,25 +55,26 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isLoading, i
   };
 
   const disabled = isLoading || !isConnected;
-  const placeholder = !isConnected ? 'Connecting...' : isLoading ? 'AI is typing...' : 'Type your message...';
+  const placeholder = !isConnected ? 'Disconnected...' : isLoading ? 'AI is typing...' : 'Type your message...';
 
   return (
     <div className="p-4 bg-surface border-t border-border shrink-0">
       <div className="flex gap-3 items-end">
-        {/* Model selector */}
-        <select
-          value={model}
-          onChange={(e) => setModel(e.target.value)}
-          className="h-11 px-3 rounded-xl border border-border bg-surface text-text-secondary text-xs font-medium appearance-none cursor-pointer hover:border-brand-400/50 focus:outline-none focus:border-brand-400 shrink-0"
-          disabled={disabled}
-          aria-label="Select model"
-        >
-          {models.map((m) => (
-            <option key={m.value} value={m.value}>{m.label}</option>
-          ))}
-        </select>
+        {/* Model selector — only show when API key is present or transport is WS */}
+        {(apiKey || transport === 'ws') && (
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            className="h-11 px-3 rounded-xl border border-border bg-surface text-text-secondary text-xs font-medium appearance-none cursor-pointer hover:border-brand-400/50 focus:outline-none focus:border-brand-400 shrink-0 max-w-[140px]"
+            disabled={disabled}
+            aria-label="Select model"
+          >
+            {modelList.map((m) => (
+              <option key={m.value} value={m.value}>{m.label}</option>
+            ))}
+          </select>
+        )}
 
-        {/* Textarea */}
         <div className="flex-1 relative">
           <textarea
             ref={textareaRef}
@@ -76,7 +89,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isLoading, i
           />
         </div>
 
-        {/* Send button */}
         <button
           onClick={handleSend}
           disabled={disabled || !input.trim()}
@@ -92,5 +104,3 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isLoading, i
 };
 
 export default MessageInput;
-
-
