@@ -34,19 +34,28 @@ export const useChatApi = (apiKey?: string): UseChatApiReturn => {
   const [isConnected, setIsConnected] = useState(false);
   const healthCheckRef = useRef<ReturnType<typeof setInterval>>();
 
+  // Health check: try hitting Gemini API directly if key exists, else ping /api/health
   useEffect(() => {
     const check = async () => {
       try {
-        const resp = await fetch('/api/health', { method: 'GET', signal: AbortSignal.timeout(5000) });
-        setIsConnected(resp.ok);
+        if (apiKey) {
+          const resp = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`,
+            { method: 'GET', signal: AbortSignal.timeout(5000) }
+          );
+          setIsConnected(resp.ok);
+        } else {
+          const resp = await fetch('/api/health', { method: 'GET', signal: AbortSignal.timeout(5000) });
+          setIsConnected(resp.ok);
+        }
       } catch {
         setIsConnected(false);
       }
     };
     check();
-    healthCheckRef.current = setInterval(check, 15000);
+    healthCheckRef.current = setInterval(check, 30000);
     return () => clearInterval(healthCheckRef.current);
-  }, []);
+  }, [apiKey]);
 
   const sendMessage = async (message: string, model?: string) => {
     if (!message.trim() || isLoading) return;
@@ -61,21 +70,48 @@ export const useChatApi = (apiKey?: string): UseChatApiReturn => {
     setIsLoading(true);
 
     try {
-      const resp = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: message.trim(),
-          model: model || 'gemini-2.5-flash',
-          apiKey: apiKey || undefined,
-        }),
-      });
-      const data = await resp.json();
+      let aiText = '';
+
+      if (apiKey) {
+        // Call Gemini API directly from the browser
+        const modelName = model || 'gemini-2.5-flash';
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const resp = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ role: 'user', parts: [{ text: message.trim() }] }],
+            safetySettings: [
+              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+            ],
+          }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+          aiText = `API error: ${data?.error?.message || resp.statusText}`;
+        } else {
+          aiText = (data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join('') || '').trim();
+          if (!aiText) aiText = 'No response from model.';
+        }
+      } else {
+        // Fall back to serverless function
+        const resp = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: message.trim() }),
+        });
+        const data = await resp.json();
+        aiText = data?.text || 'Sin respuesta';
+      }
+
       setMessages((prev) => {
         const copy = [...prev];
         const idx = copy.findIndex((m) => m.sender === 'ai' && m.text === '...');
         if (idx !== -1) copy.splice(idx, 1);
-        copy.push({ id: generateId(), sender: 'ai', text: data?.text || 'Sin respuesta', timestamp: new Date() });
+        copy.push({ id: generateId(), sender: 'ai', text: aiText, timestamp: new Date() });
         return copy;
       });
     } catch {
