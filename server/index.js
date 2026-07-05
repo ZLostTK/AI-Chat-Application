@@ -36,7 +36,11 @@ const callGeminiAPI = async (message, apiKey, modelName = 'gemini-2.5-flash') =>
   }
   try {
     console.log(`[Server] model=${modelName} via callGeminiAPI`);
-    const model = ai.getGenerativeModel({ model: modelName });
+    const model = ai.getGenerativeModel({
+      model: modelName,
+      systemInstruction: 'Responde de forma breve y concisa. Sé directo, sin rodeos.',
+      generationConfig: { maxOutputTokens: 500 },
+    });
     const result = await model.generateContent(message);
     const response = await result.response;
     return response.text();
@@ -57,7 +61,11 @@ app.post('/api/chat', async (req, res) => {
     if (!ai) {
       return res.json({ sender: 'ai', text: 'No API key configured. Add one in Settings.' });
     }
-    const model = ai.getGenerativeModel({ model: finalModel });
+    const model = ai.getGenerativeModel({
+      model: finalModel,
+      systemInstruction: 'Responde de forma breve y concisa. Sé directo, sin rodeos.',
+      generationConfig: { maxOutputTokens: 500 },
+    });
     const result = await model.generateContent(userText);
     const response = await result.response;
     res.json({ sender: 'ai', text: response.text() || 'No response.' });

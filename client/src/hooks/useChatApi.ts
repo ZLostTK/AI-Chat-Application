@@ -96,6 +96,7 @@ export const useChatApi = (apiKey?: string): UseChatApiReturn => {
 
         const body: any = {
           contents: [{ role: 'user', parts: [{ text: message.trim() }] }],
+          systemInstruction: { parts: [{ text: 'Responde de forma breve y concisa. Sé directo, sin rodeos.' }] },
           safetySettings: [
             { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
             { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
@@ -103,6 +104,7 @@ export const useChatApi = (apiKey?: string): UseChatApiReturn => {
             { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
           ],
         };
+        genConfig.maxOutputTokens = 500;
         if (Object.keys(genConfig).length > 0) body.generationConfig = genConfig;
 
         const resp = await fetch(endpoint, {
