@@ -9,3 +9,4 @@ export { AccessibilityProvider } from './accessibility/AccessibilityProvider';
 export { AccessibilityControls } from './accessibility/AccessibilityControls';
 export { Layout } from './layout/Layout';
 export { Sidebar } from './layout/Sidebar';
+export { WelcomeScreen } from './layout/WelcomeScreen';
