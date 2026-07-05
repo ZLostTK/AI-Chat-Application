@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Design tokens — map to tailwind.config.js extend.colors */
+    --color-bg-primary: #0f172a;
+    --color-bg-secondary: #1e293b;
+    --color-bg-elevated: #334155;
+    --color-text-primary: #f1f5f9;
+    --color-text-secondary: #cbd5e1;
+    --color-text-muted: #94a3b8;
+    --color-accent: #60a5fa;
+    --color-accent-hover: #3b82f6;
+    --color-border: #334155;
+    --color-success: #34d399;
+    --color-error: #f87171;
+    --color-warning: #fbbf24;
+
+    /* Backward-compat aliases for existing CSS (Chat.css, AccessibilityControls.css) */
+    --primary-color: #60a5fa;
+    --primary-hover: #3b82f6;
+    --secondary-color: #1e293b;
+    --background: #0f172a;
+    --chat-bg: #1e293b;
+    --user-message-bg: #3b82f6;
+    --ai-message-bg: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-light: #94a3b8;
+    --border-color: #334155;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+  }
+
+  body {
+    @apply bg-surface text-slate-100 antialiased;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: var(--base-font-size, 16px);
+    line-height: 1.6;
+  }
+
+  /* Focus ring — accessible, matches brand accent */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-400;
+  }
+}
