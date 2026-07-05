@@ -77,7 +77,7 @@ export const useChatApi = (apiKey?: string): UseChatApiReturn => {
         const isImageModel = modelName.toLowerCase().includes('image');
         const isTtsModel = modelName.toLowerCase().includes('tts');
         console.log(`[Chat] model=${modelName} isImage=${isImageModel} isTts=${isTtsModel}`);
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelName)}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
         // Build generation config based on model type
         const genConfig: any = {};
