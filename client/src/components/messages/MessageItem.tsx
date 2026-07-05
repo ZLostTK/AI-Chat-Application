@@ -22,7 +22,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onAction }) => {
   const isUser = message.sender === 'user';
 
   return (
-    <div className={`group flex gap-3 ${isUser ? 'self-end flex-row-reverse' : 'self-start'} max-w-[85%]`}>
+    <div className={`group flex gap-3 ${isUser ? 'self-end flex-row-reverse' : 'self-start'} max-w-[85%] animate-[scale-in_0.2s_ease-out]`}>
       {/* Avatar */}
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
         isUser ? 'bg-brand-500 text-white' : 'bg-surface-elevated text-slate-100 border-2 border-border'
@@ -39,10 +39,10 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onAction }) => {
             : 'bg-surface-card text-slate-100 border border-border rounded-bl-sm shadow-sm'
         }`}>
           {isLoading ? (
-            <div className="flex gap-1 py-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '-0.32s' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '-0.16s' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-text-muted animate-bounce" />
+            <div className="flex gap-1.5 py-2">
+              <span className="w-2 h-2 rounded-full bg-text-muted animate-[shimmer-pulse_1.4s_ease-in-out_infinite_both]" style={{ animationDelay: '-0.32s' }} />
+              <span className="w-2 h-2 rounded-full bg-text-muted animate-[shimmer-pulse_1.4s_ease-in-out_infinite_both]" style={{ animationDelay: '-0.16s' }} />
+              <span className="w-2 h-2 rounded-full bg-text-muted animate-[shimmer-pulse_1.4s_ease-in-out_infinite_both]" />
             </div>
           ) : (
             <MarkdownRenderer content={message.text} onAction={onAction} />
