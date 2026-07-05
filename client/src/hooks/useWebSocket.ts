@@ -11,7 +11,7 @@ interface UseWebSocketReturn {
   messages: Message[];
   isConnected: boolean;
   isLoading: boolean;
-  sendMessage: (message: string) => void;
+  sendMessage: (message: string, model?: string) => void;
   clearMessages: () => void;
   loadMessages: (msgs: Message[]) => void;
 }
@@ -131,13 +131,14 @@ export const useWebSocket = (url: string, apiKey?: string): UseWebSocketReturn =
     };
   }, [url]);
 
-  const sendMessage = (message: string) => {
+  const sendMessage = (message: string, model?: string) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN && message.trim() && !isLoading) {
       try {
         // Send message to server
         ws.current.send(JSON.stringify({
           message: message.trim(),
           apiKey: apiKey || undefined,
+          model: model || undefined,
         }));
         
         // Add user message immediately

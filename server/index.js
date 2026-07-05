@@ -28,14 +28,15 @@ function getGenAI(apiKey) {
   return new GoogleGenerativeAI(apiKey);
 }
 
-// Función genérica de conversación (acepta apiKey opcional)
-const callGeminiAPI = async (message, apiKey) => {
+// Función genérica de conversación (acepta apiKey y modelo opcionales)
+const callGeminiAPI = async (message, apiKey, modelName = 'gemini-2.5-flash') => {
   const ai = getGenAI(apiKey);
   if (!ai) {
     return `Simulación: recibí tu mensaje "${message}"`;
   }
   try {
-    const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
+    console.log(`[Server] model=${modelName} via callGeminiAPI`);
+    const model = ai.getGenerativeModel({ model: modelName });
     const result = await model.generateContent(message);
     const response = await result.response;
     return response.text();
@@ -50,11 +51,13 @@ app.post('/api/chat', async (req, res) => {
   try {
     const { message, apiKey, model: modelName } = req.body || {};
     const userText = String(message || '').slice(0, 4000);
+    const finalModel = modelName || 'gemini-2.5-flash';
+    console.log(`[Server] POST /api/chat model=${finalModel}`);
     const ai = apiKey ? new GoogleGenerativeAI(apiKey) : genAI;
     if (!ai) {
       return res.json({ sender: 'ai', text: 'No API key configured. Add one in Settings.' });
     }
-    const model = ai.getGenerativeModel({ model: modelName || 'gemini-2.5-flash' });
+    const model = ai.getGenerativeModel({ model: finalModel });
     const result = await model.generateContent(userText);
     const response = await result.response;
     res.json({ sender: 'ai', text: response.text() || 'No response.' });
@@ -126,7 +129,8 @@ wss.on('connection', (ws) => {
       const parsedMessage = JSON.parse(message.toString());
       const userMessage = parsedMessage.message;
       const apiKey = parsedMessage.apiKey; // client-provided key
-      console.log(`📩 Mensaje recibido: ${userMessage?.slice(0, 50)}...`);
+      const modelName = parsedMessage.model || 'gemini-2.5-flash';
+      console.log(`📩 Mensaje recibido: ${userMessage?.slice(0, 50)}... [Server] model=${modelName}`);
 
       let aiResponse;
       if (typeof userMessage === 'string' && userMessage.startsWith('::EXEC_CODE::')) {
@@ -138,7 +142,7 @@ wss.on('connection', (ws) => {
           aiResponse = 'Error: payload de ejecución inválido.';
         }
       } else {
-        aiResponse = await callGeminiAPI(userMessage, apiKey);
+        aiResponse = await callGeminiAPI(userMessage, apiKey, modelName);
       }
 
       if (ws.readyState === WebSocket.OPEN) {
