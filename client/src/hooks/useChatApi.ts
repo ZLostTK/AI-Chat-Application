@@ -83,8 +83,14 @@ export const useChatApi = (apiKey?: string): UseChatApiReturn => {
         if (isImageModel) {
           genConfig.responseModalities = ['TEXT', 'IMAGE'];
         } else if (isTtsModel) {
-          genConfig.responseModalities = ['audio'];
-          genConfig.speechConfig = [{ voice: 'Kore' }];
+          genConfig.responseModalities = ['AUDIO'];
+          genConfig.speechConfig = {
+            voiceConfig: {
+              prebuiltVoiceConfig: {
+                voiceName: 'Kore',
+              },
+            },
+          };
         }
 
         const body: any = {
