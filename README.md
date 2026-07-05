@@ -1,194 +1,175 @@
-# AI ChatBot
+# AI ChatBot Application
 
-Aplicación de chat con IA usando Gemini API. Soporta texto, generación de imágenes y TTS (text-to-speech) con selección de modelo, historial de conversaciones, tema oscuro/claro y conexión vía HTTP API o WebSocket.
+![Project Preview](./screenshot.png)
 
-![Captura de pantalla](screenshots/screenshot.webp)
-
----
-
-## Stack
-
-| Capa | Tecnología |
-|---|---|
-| **Frontend** | React 18 + TypeScript + Vite + Tailwind CSS |
-| **Backend** | Express + WebSocket (`ws`) |
-| **IA** | Google Gemini API (SDK `@google/generative-ai`) |
-| **Despliegue** | Vercel (serverless) / Netlify (functions) |
+A modern AI chat interface powered by Google Gemini, featuring Markdown rendering, LaTeX math support, code execution, and comprehensive accessibility controls. Supports both HTTP API and WebSocket transport modes.
 
 ---
 
-## Funcionalidades
+## Features
 
-### Modelos de IA
-
-- **Texto:** cualquier modelo Gemini que soporte `generateContent` (ej. `gemini-2.5-flash`)
-- **Imagen:** modelos con "image" en el nombre → activa `responseModalities: ['TEXT', 'IMAGE']`, renderiza `inlineData` como markdown
-- **TTS:** modelos con "tts" en el nombre → activa `responseModalities: ['AUDIO']`, usa voz `Kore`, renderiza audio HTML
-- Modelos conocidos inyectados aunque la API no los liste:
-  - `gemini-2.5-flash-preview-image` — Gemini 2.5 Flash Image
-  - `gemini-3.1-flash-tts-preview` — Gemini 3.1 Flash TTS
-- Límite de salida: **500 tokens** por respuesta
-- System instruction: *"Responde de forma breve y concisa. Sé directo, sin rodeos."*
-
-### Transporte
-
-| Modo | Descripción |
-|---|---|
-| **HTTP API** | `fetch('/api/chat')` — serverless (Vercel/Netlify) |
-| **WebSocket** | Conexión persistente en tiempo real (`ws://localhost:3001`) |
-
-Selección por precedencia:
-1. Parámetro URL `?transport=ws|api` (+ `&wsUrl=ws://host:puerto`)
-2. `localStorage('chat:transport')`
-3. `VITE_CHAT_TRANSPORT` / `VITE_WS_URL` en `.env`
-4. Default: `api`
-
-### Gestión de API Key
-
-- Modal al primer inicio (`ApiKeyModal`)
-- Almacenada en `localStorage('gemini:apiKey')`
-- Gestión en SettingsDrawer (ver últimos 4 chars / editar / eliminar)
-- Llamadas directas del navegador a Gemini API cuando hay key (sin proxy)
-- Fallback al servidor cuando no hay key
-
-### Historial de conversaciones
-
-- Guardado automático en `localStorage('chat:conversations')`
-- Agrupado por fecha: Hoy / Ayer / Anteriores
-- Sidebar con título (primer mensaje, 50 chars máx.)
-- Clic para cargar, botón "New Chat" para empezar una nueva
-- Sincronización entre pestañas vía evento `storage`
-
-### Conexión y estado
-
-- Health check cada **30 segundos** (Gemini API directa o `/api/health`)
-- Indicador: Connected (verde), Disconnected (gris), API Key Needed (ámbar)
-- Reconexión automática cada 3s en modo WebSocket
-- Logs en consola del navegador y servidor con el modelo usado
-
-### Tema y accesibilidad
-
-- Modos: Oscuro / Claro / Sistema
-- Alto contraste
-- Tamaño de fuente: Pequeño / Medio / Grande
-- Movimiento reducido
-- Colores vía CSS custom properties (`--color-bg-primary`, `--color-text-primary`, etc.)
-
-### SettingsDrawer
-
-Panel deslizable (desktop: lateral derecho, mobile: bottom sheet 85vh):
-- **Appearance** — Dark / Light / System
-- **Accessibility** — High Contrast, Font Size, Reduced Motion
-- **Connection** — HTTP API / WebSocket
-- **API Key** — mostrar últimos 4 caracteres, botón Change/Add
-- **About** — v1.0.0
-
-### Páginas demo
-
-- Chat (página principal)
-- Markdown Demo (renderizado de markdown)
-- Simple Test (prueba básica)
+- **Multi-Model Chat** -- Switch between Gemini 2.5 Flash, Gemini 2.5 Pro, Image generation, and TTS models.
+- **Rich Markdown Rendering** -- Full GFM support, syntax-highlighted code blocks (highlight.js), LaTeX math (KaTeX), and raw HTML.
+- **Python Code Execution** -- Run Python code inline via Gemini Code Execution tool.
+- **Chat History** -- Conversations are persisted in localStorage and grouped by Today/Yesterday/Older.
+- **Dual Transport** -- Use HTTP REST API or real-time WebSocket, switchable from Settings.
+- **Client-Side API Key** -- Bring your own Gemini API key; stored locally and never sent to the server.
+- **Accessibility** -- High contrast mode, font size adjustment (small/medium/large), reduced motion, dark/light/system theme.
+- **Responsive Layout** -- Collapsible sidebar with mobile drawer support.
+- **Serverless-Ready** -- Deploy to Vercel or Netlify with pre-configured serverless functions.
 
 ---
 
-## Requisitos
+## Architecture
+
+```
+ai-chat-application/
+├── client/                 # React + Vite + TypeScript frontend
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── accessibility/   # AccessibilityProvider (theme, contrast, font, motion)
+│   │   │   ├── chat/            # Chat, MessageInput
+│   │   │   ├── layout/          # Layout, Sidebar, SettingsDrawer, WelcomeScreen, ApiKeyModal
+│   │   │   ├── markdown/        # MarkdownRenderer, MarkdownDemo, SimpleMarkdownTest
+│   │   │   └── messages/        # MessageList, MessageItem
+│   │   ├── hooks/               # useChatApi (HTTP), useWebSocket (WS)
+│   │   ├── utils/               # messageFormatter (marked + KaTeX legacy renderer)
+│   │   └── App.tsx              # Root with routing between Chat / MarkdownDemo / SimpleMarkdownTest
+│   └── package.json
+├── server/                 # Express + WebSocket backend
+│   └── index.js            # HTTP POST /api/chat, GET /api/health, WebSocket, Code Execution
+├── api/                    # Vercel serverless functions
+│   ├── chat.js
+│   └── health.js
+├── netlify/                # Netlify serverless functions
+│   └── functions/chat.js
+├── vercel.json             # Vercel deployment config
+└── netlify.toml            # Netlify deployment config
+```
+
+> [!NOTE]
+> The client can call the Gemini API directly (no backend needed) when a user-provided API key is present. The server is only required for WebSocket transport or when using the server's env-configured API key.
+
+---
+
+## Installation
+
+### Prerequisites
 
 - Node.js 18+
-- pnpm (o npm)
-- Opcional: Vercel CLI / Netlify CLI (despliegue local)
+- pnpm (recommended) or npm
+- Google Gemini API key (free at [AI Studio](https://aistudio.google.com/app/apikey))
 
-## Variables de entorno
-
-| Variable | Dónde | Descripción |
-|---|---|---|
-| `GEMINI_API_KEY` | servidor | Key para respuestas reales (fallback si el cliente no envía) |
-| `VITE_CHAT_TRANSPORT` | `client/.env` | `ws` o `api` |
-| `VITE_WS_URL` | `client/.env` | URL del WebSocket (default `ws://localhost:3001`) |
-| `PORT` | servidor | Puerto del servidor Express+WS (default 3001) |
-
----
-
-## Estructura del proyecto
-
-```
-├── client/                        # Frontend React + Vite
-│   └── src/
-│       ├── components/
-│       │   ├── accessibility/     # AccessibilityProvider, contexto de tema
-│       │   ├── chat/              # Chat, MessageInput, MessageList, MessageItem
-│       │   ├── layout/            # Layout, Sidebar, SettingsDrawer, ApiKeyModal, WelcomeScreen
-│       │   ├── markdown/          # MarkdownRenderer (audio, imágenes, código)
-│       │   └── messages/          # MessageItem, MessageList
-│       ├── hooks/
-│       │   ├── useChatApi.ts      # Hook HTTP directo a Gemini API
-│       │   └── useWebSocket.ts    # Hook WebSocket con reconexión automática
-│       ├── utils/
-│       │   └── messageFormatter.ts
-│       ├── App.tsx
-│       ├── index.css              # Temas CSS variables, animaciones
-│       └── main.tsx
-├── server/
-│   └── index.js                   # Express + WebSocket + Gemini SDK
-├── api/
-│   ├── chat.js                    # Función serverless Vercel
-│   └── health.js                  # Health check endpoint
-├── netlify/
-│   └── functions/chat.js          # Función serverless Netlify
-├── vercel.json
-└── netlify.toml
-```
-
----
-
-## Desarrollo local
+### Setup
 
 ```bash
-# 1. Cliente
-cd client
+# Clone the repository
+git clone <repo-url>
+cd ai-chat-application
+
+# Install all dependencies
 pnpm install
-pnpm dev          # http://localhost:5173
 
-# 2. (Opcional) Servidor Express + WebSocket
-cd server
-pnpm install
-node index.js     # ws://localhost:3001 + /api/health + /api/chat
-```
+# Install client dependencies
+cd client && pnpm install && cd ..
 
-Forzar modo WebSocket:
-```
-http://localhost:5173/?transport=ws&wsUrl=ws://localhost:3001
+# Install server dependencies
+cd server && pnpm install && cd ..
 ```
 
-Forzar modo HTTP API:
+### Environment Variables
+
+**Server** (`server/.env`):
+
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
-http://localhost:5173/?transport=api
+
+**Client** (`client/.env`):
+
+```env
+VITE_CHAT_TRANSPORT=api        # 'api' for HTTP, 'ws' for WebSocket
+VITE_WS_URL=ws://localhost:3001 # WebSocket server URL
 ```
+
+> [!CAUTION]
+> Never commit `.env` files. Only commit the `.env.example` templates provided in the repo.
 
 ---
 
-## Despliegue
+## Usage
+
+### Development
+
+```bash
+# Terminal 1: Start the server (required for WebSocket mode or env API key)
+cd server && pnpm dev
+
+# Terminal 2: Start the client dev server
+cd client && pnpm dev
+```
+
+Open `http://localhost:5173` in your browser. On first load, the app prompts for a Gemini API key -- enter one from [AI Studio](https://aistudio.google.com/app/apikey).
+
+### Transport Modes
+
+- **HTTP API** (default) -- Messages are sent via `POST /api/chat`. Works with the server or Vercel serverless functions.
+- **WebSocket** (`ws`) -- Real-time bidirectional communication. Requires the Node.js server to be running.
+
+Switch transport in Settings (gear icon in sidebar) or via query parameter: `?transport=ws`.
+
+### Model Selection
+
+When a valid API key is provided, the app fetches available Gemini models dynamically. You can also manually select:
+
+- Gemini 2.5 Flash (default)
+- Gemini 2.5 Pro
+- Gemini 2.5 Flash Image
+- Gemini 3.1 Flash TTS
+
+### Code Execution
+
+Send a message starting with `::EXEC_CODE::` followed by a JSON payload with `language` and `code` fields, or click the Play button on any Python code block in an AI response.
+
+### Chat History
+
+Conversations are automatically saved to `localStorage`. Access them from the sidebar sidebar grouped by date. Click "New Chat" or the trash icon to start fresh.
+
+---
+
+## Deployment
 
 ### Vercel
 
-1. Configurar `GEMINI_API_KEY` en Settings → Environment Variables
-2. Conectar repositorio y desplegar
-   - `vercel.json` construye `client/` como estático y expone `api/chat.js`
+The `vercel.json` configures static client hosting and serverless API functions:
+
+```bash
+npx vercel deploy --prod
+```
 
 ### Netlify
 
-1. Configurar `GEMINI_API_KEY` en Site settings → Environment variables
-2. Conectar repositorio y desplegar
-   - `netlify.toml` construye `client/dist` y redirige `/api/*` a `/.netlify/functions/*`
+The `netlify.toml` configures build commands, publish directory, and serverless function redirects:
+
+```bash
+npx netlify deploy --prod
+```
+
+> [!TIP]
+> For serverless deployments, set `GEMINI_API_KEY` as an environment variable in the Vercel/Netlify dashboard. The client-side API key input is optional and can be used alongside or instead of the server-configured key.
 
 ---
 
-## Solución de problemas
+## Tech Stack
 
-| Problema | Causa |
-|---|---|
-| 404 en `/api/chat` local | Usar `netlify dev` o `vercel dev` desde la raíz |
-| Respuesta "Simulación" | Falta `GEMINI_API_KEY` en el entorno |
-| 429 Too Many Requests | Cuota gratuita agotada, esperar o usar key de pago |
-| WebSocket no conecta | Puerto incorrecto, proxy bloqueando, usar `?wsUrl=` para debug |
-| Imagen no se genera | El modelo debe contener "image" en el nombre (ej. `gemini-2.5-flash-preview-image`) |
-| Node < 18 | Actualizar Node (se usa `fetch` nativo) |
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS |
+| Markdown | react-markdown, remark-gfm, remark-math, rehype-katex, rehype-raw |
+| Code | highlight.js |
+| Math | KaTeX |
+| Icons | lucide-react |
+| Backend | Express, ws (WebSocket) |
+| AI SDK | @google/generative-ai |
+| Deployment | Vercel, Netlify |
+| Package Manager | pnpm |
