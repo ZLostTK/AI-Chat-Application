@@ -80,7 +80,7 @@ const Chat: React.FC<ChatProps> = () => {
             );
           // Always inject well-known image/TTS models so they appear even if not listed
           const knownExtra = [
-            { value: 'gemini-2.5-flash-image', label: 'Gemini 2.5 Flash Image' },
+            { value: 'gemini-2.5-flash-preview-image', label: 'Gemini 2.5 Flash Image' },
             { value: 'gemini-3.1-flash-tts-preview', label: 'Gemini 3.1 Flash TTS' },
           ];
           for (const extra of knownExtra) {
