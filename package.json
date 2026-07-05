@@ -1,7 +1,0 @@
-{
-	"dependencies": {
-		"api": "link:api",
-		"server": "link:server",
-		"vite-react-typescript-starter": "link:client"
-	}
-}
